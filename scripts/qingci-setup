@@ -30,11 +30,22 @@ for kv in \
 done
 
 # 3) 确认 fcitx5 开机自启项存在（fcitx5 主包自带，缺则从包内补）
-if [ -f /usr/share/applications/org.fcitx.Fcitx5.desktop ] \
-    && [ ! -f /etc/xdg/autostart/org.fcitx.Fcitx5.desktop ]; then
+# 3) 写入无条件自启条目（系统级）
+#    fcitx5 包自带的 /etc/xdg/autostart/org.fcitx.Fcitx5.desktop 在 GNOME
+#    会话下会被条件过滤跳过，导致每次开机 fcitx5 不运行；此条目无任何
+#    NotShowIn/OnlyShowIn 限制，保证所有桌面环境自启。
+if [ ! -f /etc/xdg/autostart/qingci-fcitx5-autostart.desktop ]; then
     mkdir -p /etc/xdg/autostart
-    cp /usr/share/applications/org.fcitx.Fcitx5.desktop \
-       /etc/xdg/autostart/ 2>/dev/null || true
+    cat > /etc/xdg/autostart/qingci-fcitx5-autostart.desktop <<'DESKTOP'
+[Desktop Entry]
+Name=Qingci Fcitx5 Autostart
+Comment=启动 fcitx5 输入法框架（清辞拼音）
+Exec=fcitx5
+TryExec=fcitx5
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true
+DESKTOP
 fi
 
 cat <<'EOF'
