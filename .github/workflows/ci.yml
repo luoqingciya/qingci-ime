@@ -8,34 +8,55 @@ on:
 
 jobs:
   build:
-    name: Build & Package (Linux amd64)
+    name: Build & Package (Ubuntu ${{ matrix.distro }})
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        # 在各发行版容器内构建，保证与该版 fcitx5 的 ABI 一致
+        distro: ["26.04", "26.10"]
+    container:
+      image: ubuntu:${{ matrix.distro }}
+      env:
+        DEBIAN_FRONTEND: noninteractive
     steps:
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential cmake extra-cmake-modules git curl \
+            ca-certificates \
+            libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev \
+            dpkg-dev pkg-config
+          # 容器内安装 Rust（minimal profile）
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+            | sh -s -- -y --profile minimal
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
       - uses: actions/checkout@v4
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential cmake extra-cmake-modules \
-            libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev
-
       - name: Show toolchain versions
+        shell: bash
         run: |
           rustc --version
           cargo --version
           cmake --version
-          pkg-config --modversion Fcitx5Core || true
+          echo "Fcitx5Core: $(pkg-config --modversion Fcitx5Core)"
+          echo "triplet: $(gcc -dumpmachine)"
 
       - name: Test core engine
+        shell: bash
         run: cargo test --manifest-path core/Cargo.toml
 
       - name: Build core engine (release)
+        shell: bash
         run: cargo build --release --manifest-path core/Cargo.toml
 
       - name: Build Fcitx5 addon
+        shell: bash
         run: |
           # deb 布局：前缀 /usr + 多元体系库目录，
           # 使 libqingci.so 落在 /usr/lib/<triplet>/fcitx5/（Ubuntu fcitx5 实际扫描路径）
@@ -48,11 +69,14 @@ jobs:
           cmake --build addon/build -j"$(nproc)"
 
       - name: Stage install tree & build packages
+        shell: bash
         run: |
           set -eux
-          # REF_NAME 在 pull_request 事件下为 "1/merge"，需替换斜杠
+          # REF_NAME 在 pull_request 事件下为 "N/merge"，需替换斜杠
           PKG_REF="${GITHUB_REF_NAME//\//-}"
           VERSION="$(sed -n 's/^project(fcitx5-qingci VERSION \([0-9][0-9.]*\).*/\1/p' addon/CMakeLists.txt | head -1)"
+          FCITX5_VER="$(pkg-config --modversion Fcitx5Core)"
+          DEB_BASE="qingci-ime_${VERSION}_ubuntu${{ matrix.distro }}_amd64"
 
           DESTDIR="$PWD/stage" cmake --install addon/build
           mkdir -p stage/usr/share/doc/qingci-ime
@@ -72,10 +96,11 @@ jobs:
             echo "Recommends: fcitx5-frontend-all, fcitx5-config-qt"
             echo "Suggests: im-config"
             echo "Homepage: https://github.com/luoqingciya/qingci-ime"
+            echo "Built-For: ubuntu${{ matrix.distro }} (fcitx5 ${FCITX5_VER})"
             echo "Description: 清辞拼音 —— 基于 Fcitx5 的简体拼音输入法"
             echo " Rust 核心引擎 + C++ Fcitx5 插件。"
             echo " 全拼/简拼、42 万词库、中文标点、联想预测、用户词频学习。"
-            echo " 本包针对 Ubuntu 26.04 (fcitx5 5.1.19) 构建，其他版本建议源码安装。"
+            echo " 本包针对 Ubuntu ${{ matrix.distro }} (fcitx5 ${FCITX5_VER}) 构建。"
           } > stage/DEBIAN/control
           {
             echo "#!/bin/sh"
@@ -85,18 +110,29 @@ jobs:
             echo "echo \"如系统尚未启用 fcitx5：im-config -n fcitx5 后注销重新登录。\""
           } > stage/DEBIAN/postinst
           chmod 755 stage/DEBIAN/postinst
-          dpkg-deb --build --root-owner-group stage "qingci-ime_${VERSION}_amd64.deb"
-          dpkg-deb -I "qingci-ime_${VERSION}_amd64.deb"
-          dpkg-deb -c "qingci-ime_${VERSION}_amd64.deb"
+          dpkg-deb --build --root-owner-group stage "${DEB_BASE}.deb"
+          dpkg-deb -I "${DEB_BASE}.deb"
+          dpkg-deb -c "${DEB_BASE}.deb"
 
-          # ---------- 通用 tar.gz（解压到 / ）----------
-          tar -czf "qingci-ime-${PKG_REF}-linux-amd64.tar.gz" -C stage usr
-          tar -tzf "qingci-ime-${PKG_REF}-linux-amd64.tar.gz"
+          # ---------- 容器内实测安装（依赖解析 + 文件落位）----------
+          apt-get install -y --no-install-recommends \
+            ./"${DEB_BASE}.deb"
+          dpkg -L qingci-ime
+          ldd /usr/lib/"$(gcc -dumpmachine)"/fcitx5/libqingci.so \
+            | tee /dev/stderr | grep -q "not found" && {
+              echo "错误：动态依赖缺失"; exit 1;
+            } || echo "动态依赖全部解析成功"
+
+          # ---------- 通用 tar.gz（26.04 产物作为通用包，解压到 /）----------
+          if [ "${{ matrix.distro }}" = "26.04" ]; then
+            tar -czf "qingci-ime-${PKG_REF}-linux-amd64.tar.gz" -C stage usr
+            tar -tzf "qingci-ime-${PKG_REF}-linux-amd64.tar.gz"
+          fi
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: qingci-ime-package
+          name: qingci-ime-package-ubuntu${{ matrix.distro }}
           path: |
             *.tar.gz
             *.deb
@@ -106,9 +142,14 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "清辞拼音 $GITHUB_REF_NAME" \
-            --generate-notes \
+          # 矩阵两个 job 依序发布：幂等创建/上传
+          gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 \
+            || gh release create "$GITHUB_REF_NAME" \
+                 --repo "$GITHUB_REPOSITORY" \
+                 --title "清辞拼音 $GITHUB_REF_NAME" \
+                 --generate-notes
+          gh release upload "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" --clobber \
             *.tar.gz *.deb
