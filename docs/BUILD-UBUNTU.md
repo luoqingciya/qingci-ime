@@ -4,7 +4,8 @@
 
 ```bash
 sudo apt update
-sudo apt install build-essential cmake extra-cmake-modules fcitx5-dev
+sudo apt install build-essential cmake extra-cmake-modules \
+     libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev
 ```
 
 Rust 工具链（推荐 rustup；apt 安装的 rustc ≥1.56 亦可）：
@@ -14,8 +15,10 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source "$HOME/.cargo/env"
 ```
 
-> 说明：`fcitx5-dev` 会拉取 Fcitx5Core 头文件与 CMake 配置；
-> `extra-cmake-modules` 提供 KDE 风格 CMake 宏（本插件不强制依赖，但建议安装）。
+> 说明：Ubuntu 将 Fcitx5 的开发文件拆分为
+> `libfcitx5core-dev` / `libfcitx5config-dev` / `libfcitx5utils-dev`
+> （Debian 上的 `fcitx5-dev` 在 Ubuntu 中不存在）；
+> `extra-cmake-modules` 提供 Fcitx5CompilerSettings 所需的 KDE/ECM 宏。
 
 ## 二、构建与安装
 

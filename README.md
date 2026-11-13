@@ -40,7 +40,8 @@
 
 ```bash
 # 依赖
-sudo apt install build-essential cmake extra-cmake-modules fcitx5-dev
+sudo apt install build-essential cmake extra-cmake-modules \
+     libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev
 # Rust（建议 rustup，apt 的 rustc 亦可，需 ≥1.56）
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
