@@ -194,7 +194,7 @@ void QingciEngine::keyEvent(const InputMethodEntry &entry,
 
     // 3) 空格 -> 提交当前高亮候选（默认第一个）
     if (sym == FcitxKey_space || sym == FcitxKey_KP_Space) {
-        const auto *list = ic->inputPanel().candidateList();
+        auto list = ic->inputPanel().candidateList();
         if (list && !list->empty()) {
             int cursor = list->cursorIndex();
             const CandidateWord &word =
@@ -207,7 +207,7 @@ void QingciEngine::keyEvent(const InputMethodEntry &entry,
 
     // 4) 数字键 1-9 -> 选词
     if (sym >= FcitxKey_1 && sym <= FcitxKey_9) {
-        const auto *list = ic->inputPanel().candidateList();
+        auto list = ic->inputPanel().candidateList();
         int idx = static_cast<int>(sym - FcitxKey_1);
         if (list && !list->empty() && idx < static_cast<int>(kPageSize)) {
             if (idx < static_cast<int>(list->size())) {
