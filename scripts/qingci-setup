@@ -5,11 +5,23 @@
 # 用法：sudo qingci-setup
 set -e
 
-# 1) 切换 im-config 默认框架为 fcitx5
-if command -v im-config >/dev/null 2>&1; then
-    im-config -n fcitx5
+# 确定真实用户的 home（sudo 运行时 SUDO_USER 才是登录用户，
+# im-config/xinputrc 必须落在用户目录而非 /root）
+if [ "$(id -u)" = "0" ] && [ -n "${SUDO_USER:-}" ]; then
+    USER_HOME="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
+    RUN_AS="$SUDO_USER"
 else
-    echo "提示：未安装 im-config（sudo apt install im-config 后重跑本脚本）"
+    USER_HOME="${HOME:-/root}"
+    RUN_AS=""
+fi
+
+# 1) 用户级 xinputrc（im-config 的用户配置文件）。
+#    不调用 im-config 工具本身：其 -n 模式在无显示环境（SSH 等）下会
+#    静默失败（RC=1），直接写它 source 的配置文件更可靠。
+printf '# 由 qingci-setup 生成：默认输入法框架 fcitx5\nrun_im fcitx5\n' \
+    > "$USER_HOME/.xinputrc"
+if [ -n "$RUN_AS" ]; then
+    chown "$RUN_AS:$RUN_AS" "$USER_HOME/.xinputrc"
 fi
 
 # 2) 写入会话环境变量（幂等：已存在则改写，缺省则追加）
@@ -29,11 +41,9 @@ for kv in \
     fi
 done
 
-# 3) 确认 fcitx5 开机自启项存在（fcitx5 主包自带，缺则从包内补）
 # 3) 写入无条件自启条目（系统级）
-#    fcitx5 包自带的 /etc/xdg/autostart/org.fcitx.Fcitx5.desktop 在 GNOME
-#    会话下会被条件过滤跳过，导致每次开机 fcitx5 不运行；此条目无任何
-#    NotShowIn/OnlyShowIn 限制，保证所有桌面环境自启。
+#    Ubuntu 的 fcitx5 包不自带 autostart 条目，GNOME 下 fcitx5 不会随
+#    会话启动；此条目无 NotShowIn/OnlyShowIn 限制，保证所有桌面环境自启。
 if [ ! -f /etc/xdg/autostart/qingci-fcitx5-autostart.desktop ]; then
     mkdir -p /etc/xdg/autostart
     cat > /etc/xdg/autostart/qingci-fcitx5-autostart.desktop <<'DESKTOP'
