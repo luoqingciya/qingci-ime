@@ -28,8 +28,8 @@ source "$HOME/.cargo/env"
 对应版本的 deb（CI 在各发行版容器内构建并实测安装）：
 
 ```bash
-sudo apt install ./qingci-ime_0.2.3_ubuntu26.10_amd64.deb
-# 或：sudo dpkg -i qingci-ime_0.2.3_ubuntu26.10_amd64.deb
+sudo apt install ./qingci-ime_0.2.4_ubuntu26.10_amd64.deb
+# 或：sudo dpkg -i qingci-ime_0.2.4_ubuntu26.10_amd64.deb
 ```
 
 包内含插件、词库、文档与一键配置脚本，依赖（fcitx5 ≥ 5.1.19）由 apt
@@ -44,7 +44,7 @@ sudo apt install ./qingci-ime_0.2.3_ubuntu26.10_amd64.deb
 从 Releases 下载 `qingci-ime_<版本>-linux-amd64.tar.gz`，解压到根目录：
 
 ```bash
-sudo tar -xzf qingci-ime_0.2.3-linux-amd64.tar.gz -C /
+sudo tar -xzf qingci-ime_0.2.4-linux-amd64.tar.gz -C /
 ```
 
 ### 方式 C：源码构建
@@ -64,7 +64,7 @@ cd qingci-ime
 | 文件 | 路径 |
 |------|------|
 | 插件动态库 | `/usr/lib/<triplet>/fcitx5/libqingci.so` |
-| Addon 描述 | `/usr/share/fcitx5/addon/qingci-addon.conf` |
+| Addon 描述 | `/usr/share/fcitx5/addon/qingci.conf` |
 | 输入法描述 | `/usr/share/fcitx5/inputmethod/qingci.conf` |
 | 内置词库 | `/usr/share/fcitx5/qingci/qingci-full.dic` |
 | 图标 | `/usr/share/icons/hicolor/scalable/apps/qingci.svg` |
@@ -165,7 +165,7 @@ xi'an   → 1.西安 …
 ## 六、排错
 
 - **配置工具里找不到清辞拼音**：确认
-  `/usr/share/fcitx5/addon/qingci-addon.conf` 与
+  `/usr/share/fcitx5/addon/qingci.conf` 与
   `/usr/share/fcitx5/inputmethod/qingci.conf` 存在；查看
   `fcitx5` 终端日志是否报 `Could not locate library libqingci.so`。
 - **插件加载失败**：`ldd /usr/lib/$(gcc -dumpmachine)/fcitx5/libqingci.so`
