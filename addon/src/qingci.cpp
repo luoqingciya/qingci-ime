@@ -499,6 +499,9 @@ void QingciEngine::updateUI(InputContext *ic, QingciState *st) {
                                               Text(st->candidates_[i]));
         }
         list->setCursorKeepInSamePage(true);
+        // CommonCandidateList 的 cursor 默认为 -1（不绘制高亮），
+        // 显式置 0 让首候选带上主题高亮（绿色胶囊）
+        list->setCursorIndex(0);
         ic->inputPanel().setCandidateList(std::move(list));
     }
 
