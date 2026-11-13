@@ -20,16 +20,16 @@ pub const SYLLABLES: &[&str] = &[
     // f
     "fa", "fo", "fei", "fou", "fan", "fen", "fang", "feng", "fu",
     // d
-    "da", "de", "dai", "dei", "dao", "dou", "dan", "dang", "deng", "dong",
-    "di", "die", "diao", "diu", "dian", "ding", "du", "duo", "dui", "duan",
-    "dun",
+    "da", "de", "dai", "dei", "den", "dia", "dao", "dou", "dan", "dang",
+    "deng", "dong", "di", "die", "diao", "diu", "dian", "ding", "du", "duo",
+    "dui", "duan", "dun",
     // t
     "ta", "te", "tai", "tao", "tou", "tan", "tang", "teng", "tong", "ti",
-    "tie", "tiao", "tian", "ting", "tu", "tuo", "tui", "tuan", "tun",
+    "tie", "tiao", "tian", "ting", "tu", "tuo", "tui", "tuan", "tun", "tei",
     // n
     "na", "nai", "nei", "ne", "nao", "nan", "nen", "nang", "neng", "nong",
     "ni", "nie", "niao", "niu", "nian", "nin", "niang", "ning", "nu", "nuo",
-    "nuan", "nv", "nve",
+    "nuan", "nv", "nve", "lo",
     // l
     "la", "le", "lai", "lei", "lao", "lou", "lan", "lang", "leng", "long",
     "li", "lia", "liao", "liu", "lian", "lin", "liang", "ling", "lu", "luo",
@@ -45,13 +45,13 @@ pub const SYLLABLES: &[&str] = &[
     "hong", "hu", "hua", "huo", "huai", "hui", "huan", "hun", "huang",
     // j
     "ji", "jia", "jie", "jiao", "jiu", "jian", "jin", "jiang", "jing", "ju",
-    "jue", "juan", "jun",
+    "jue", "juan", "jun", "jiong",
     // q
     "qi", "qia", "qie", "qiao", "qiu", "qian", "qin", "qiang", "qing", "qu",
-    "que", "quan", "qun",
+    "que", "quan", "qun", "qiong",
     // x
     "xi", "xia", "xie", "xiao", "xiu", "xian", "xin", "xiang", "xing", "xu",
-    "xue", "xuan", "xun",
+    "xue", "xuan", "xun", "xiong",
     // zh
     "zha", "zhe", "zhi", "zhai", "zhei", "zhao", "zhou", "zhan", "zhen",
     "zhang", "zheng", "zhong", "zhu", "zhua", "zhuo", "zhuai", "zhui",
