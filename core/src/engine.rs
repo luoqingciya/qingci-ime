@@ -6,11 +6,22 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
-/// 各匹配方式的权重（整数千分比）。
-const W_FULL: u32 = 1000;
-const W_ABBREV_LAST: u32 = 600;
-const W_PARTIAL: u32 = 800;
-const W_INITIALS: u32 = 350;
+/// 各匹配方式的权重（分层主键：全拼 > 部分音节 > 末字简拼 > 全简拼）。
+/// 真实词频跨度极大（jieba 从 3 到 300 万+），乘性权重压不住跨层倒挂，
+/// 故权重作为主排序键、词频仅在层内比较。
+const W_FULL: u32 = 4;
+const W_ABBREV_LAST: u32 = 2;
+const W_PARTIAL: u32 = 3;
+const W_INITIALS: u32 = 1;
+
+/// 层内键：用户选词置顶（次主键），基础词频兜底（最低位）。
+/// 排列：weight × 1e12 + min(user,9999) × 1e9 + min(freq, 999_999_999)。
+fn layer_score(weight: u32, base_freq: u32, user_freq: u32) -> u64 {
+    let w = weight as u64;
+    let u = (user_freq.min(9_999) as u64) * 1_000_000_000;
+    let f = (base_freq.min(999_999_999)) as u64;
+    w * 1_000_000_000_000 + u + f
+}
 
 /// 返回候选上限。
 const MAX_CANDIDATES: usize = 200;
@@ -36,7 +47,7 @@ struct EngineInner {
 #[derive(Debug, Clone)]
 pub struct Candidate {
     pub word: String,
-    pub score: u32,
+    pub score: u64,
 }
 
 impl QingciEngine {
@@ -116,7 +127,7 @@ impl QingciEngine {
             combos = next;
         }
 
-        let mut scores: HashMap<u32, u32> = HashMap::new();
+        let mut scores: HashMap<u32, u64> = HashMap::new();
         for elems in &combos {
             query_elements(dict, &inner.user_freq, elems, &mut scores);
         }
@@ -192,17 +203,17 @@ fn query_elements(
     dict: &Dictionary,
     user_freq: &HashMap<String, u32>,
     elems: &[String],
-    scores: &mut HashMap<u32, u32>,
+    scores: &mut HashMap<u32, u64>,
 ) {
     let k = elems.len();
     let last = &elems[k - 1];
     let last_valid = is_syllable(last);
 
-    let add = |ids: &[u32], w: u32, scores: &mut HashMap<u32, u32>| {
+    let add = |ids: &[u32], w: u32, scores: &mut HashMap<u32, u64>| {
         for &id in ids {
             let entry = &dict.entries[id as usize];
             let user = user_freq.get(&entry.word).copied().unwrap_or(0);
-            let s = w.saturating_mul(entry.base_freq.saturating_add(user * 3));
+            let s = layer_score(w, entry.base_freq, user);
             let slot = scores.entry(id).or_insert(0);
             if s > *slot {
                 *slot = s;

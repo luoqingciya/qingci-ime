@@ -15,7 +15,7 @@ test -f "$CORE_LIB" || { echo "错误：未找到 $CORE_LIB"; exit 1; }
 echo "==> [2/3] 构建 Fcitx5 插件 (fcitx5-qingci)"
 cmake -B "$ROOT/addon/build" -S "$ROOT/addon" \
     -DQINGCI_CORE_STATIC_LIB="$CORE_LIB" \
-    -DQINGCI_CORE_DICT_PATH="$ROOT/core/data/qingci.dic" \
+    -DQINGCI_CORE_DICT_PATH="$ROOT/core/data/qingci-full.dic" \
     -DCMAKE_BUILD_TYPE=Release
 cmake --build "$ROOT/addon/build" -j"$(nproc)"
 

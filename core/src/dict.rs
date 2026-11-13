@@ -235,6 +235,20 @@ mod tests {
     }
 
     #[test]
+    fn load_full_dictionary_smoke() {
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("data");
+        let (dict, skipped) = Dictionary::load(&dir.join("qingci-full.dic"))
+            .expect("全量词库应可加载");
+        // 全量词库：约 42 万条，全部行合法
+        assert!(dict.entries.len() >= 400_000, "{}", dict.entries.len());
+        assert_eq!(skipped, 0);
+        // 品牌词与常用词均可查到
+        assert!(!dict.lookup_in(KeyKind::Full, "qing ci").is_empty());
+        assert!(!dict.lookup_in(KeyKind::Full, "ni hao").is_empty());
+        assert!(!dict.lookup_in(KeyKind::Initials, "w m").is_empty());
+    }
+
+    #[test]
     fn load_missing_file_errors() {
         let err = Dictionary::load(Path::new("/nonexistent/qingci.dic"))
             .expect_err("缺失文件应报错");

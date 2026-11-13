@@ -39,7 +39,7 @@ cd qingci-ime
 | 插件动态库 | `/usr/lib/<triplet>/fcitx5/libqingci.so` |
 | Addon 描述 | `/usr/share/fcitx5/addon/qingci-addon.conf` |
 | 输入法描述 | `/usr/share/fcitx5/inputmethod/qingci.conf` |
-| 内置词库 | `/usr/share/fcitx5/qingci/qingci.dic` |
+| 内置词库 | `/usr/share/fcitx5/qingci/qingci-full.dic` |
 | 图标 | `/usr/share/icons/hicolor/scalable/apps/qingci.svg` |
 | 用户词频 | `~/.local/share/qingci/user.dic`（运行时生成） |
 
@@ -85,7 +85,7 @@ cd qingci-ime
 
 ```bash
 cd core && cargo test
-cargo run --bin qingcli -- data/qingci.dic
+cargo run --bin qingcli -- data/qingci-full.dic
 ```
 
 输入示例：
@@ -105,7 +105,7 @@ xi'an   → 1.西安 …
   `fcitx5` 终端日志是否报 `Could not locate library libqingci.so`。
 - **插件加载失败**：`ldd /usr/lib/$(gcc -dumpmachine)/fcitx5/libqingci.so`
   检查依赖；确保插件与 fcitx5 为同一架构。
-- **候选为空**：`/usr/share/fcitx5/qingci/qingci.dic` 是否存在、
+- **候选为空**：`/usr/share/fcitx5/qingci/qingci-full.dic` 是否存在、
   是否被其他词库路径覆盖。
 - **无法切换输入法框架**：GNOME + Wayland 下需安装
   `fcitx5-frontend-gtk4/gtk3/qt5` 并使用 `im-config -n fcitx5`。

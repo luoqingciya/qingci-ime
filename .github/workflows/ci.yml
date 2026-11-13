@@ -39,7 +39,7 @@ jobs:
         run: |
           cmake -B addon/build -S addon \
             -DQINGCI_CORE_STATIC_LIB="$PWD/core/target/release/libqingci_core.a" \
-            -DQINGCI_CORE_DICT_PATH="$PWD/core/data/qingci.dic" \
+            -DQINGCI_CORE_DICT_PATH="$PWD/core/data/qingci-full.dic" \
             -DCMAKE_BUILD_TYPE=Release
           cmake --build addon/build -j"$(nproc)"
 

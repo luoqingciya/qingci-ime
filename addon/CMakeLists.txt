@@ -16,7 +16,8 @@ if(NOT QINGCI_CORE_STATIC_LIB)
     message(FATAL_ERROR "请通过 -DQINGCI_CORE_STATIC_LIB= 传入 libqingci_core.a 路径（先构建 core/）")
 endif()
 if(NOT QINGCI_CORE_DICT_PATH)
-    set(QINGCI_CORE_DICT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../core/data/qingci.dic")
+    # 默认安装全量词库；演示词库为 core/data/qingci.dic
+    set(QINGCI_CORE_DICT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../core/data/qingci-full.dic")
 endif()
 
 add_fcitx5_addon(qingci src/qingci.cpp)
