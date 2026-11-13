@@ -31,6 +31,8 @@ pub struct Dictionary {
     abbrev_last_map: HashMap<String, Vec<u32>>,
     /// 全简拼键 -> 词条 id 列表
     initials_map: HashMap<String, Vec<u32>>,
+    /// 首字 -> 词条 id 列表（联想预测用）
+    first_char_map: HashMap<char, Vec<u32>>,
 }
 
 impl Dictionary {
@@ -119,6 +121,15 @@ impl Dictionary {
         };
         map.get(key).map(|v| v.as_slice()).unwrap_or(&EMPTY)
     }
+
+    /// 以某汉字开头的词条 id 列表（联想预测用）。
+    pub fn predict_ids(&self, c: char) -> &[u32] {
+        static EMPTY: Vec<u32> = Vec::new();
+        self.first_char_map
+            .get(&c)
+            .map(|v| v.as_slice())
+            .unwrap_or(&EMPTY)
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -131,6 +142,13 @@ pub enum KeyKind {
 fn index_entry(dict: &mut Dictionary, id: u32, entry: &DictEntry) {
     let syls = &entry.syllables;
     let k = syls.len();
+
+    // 首字倒排（联想预测）
+    if let Some(first) = entry.word.chars().next() {
+        if ('\u{4E00}'..='\u{9FFF}').contains(&first) {
+            dict.first_char_map.entry(first).or_default().push(id);
+        }
+    }
 
     // 全拼键
     let full_key = syls.join(" ");
