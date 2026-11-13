@@ -1,0 +1,18 @@
+[package]
+name = "qingci-core"
+version = "0.1.0"
+edition = "2021"
+description = "Qingci (青瓷) Chinese pinyin input method core engine"
+license = "GPL-2.0-or-later"
+
+[lib]
+name = "qingci_core"
+crate-type = ["staticlib", "rlib"]
+
+[[bin]]
+name = "qingcli"
+path = "src/bin/qingcli.rs"
+
+[profile.release]
+opt-level = 3
+lto = true

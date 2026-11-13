@@ -1,0 +1,710 @@
+# 青瓷拼音内置基础词库（MVP）
+# 格式：词条<TAB>基础词频<TAB>音节1 音节2 ...
+# 说明：词频为同音节键内的相对排序值；ü 写作 v。
+# 如需完整词库，可导入外部拼音词表后按此格式转换。
+# ===== 高频单字 =====
+的	100000	de
+一	99750	yi
+是	99500	shi
+了	99250	le
+我	99000	wo
+不	98750	bu
+人	98500	ren
+在	98250	zai
+有	98000	you
+他	97750	ta
+这	97500	zhe
+上	97250	shang
+们	97000	men
+到	96750	dao
+来	96500	lai
+时	96250	shi
+大	96000	da
+地	95750	de
+为	95500	wei
+子	95250	zi
+中	95000	zhong
+你	94750	ni
+说	94500	shuo
+生	94250	sheng
+国	94000	guo
+年	93750	nian
+着	93500	zhe
+就	93250	jiu
+那	93000	na
+和	92750	he
+要	92500	yao
+她	92250	ta
+出	92000	chu
+也	91750	ye
+得	91500	de
+里	91250	li
+后	91000	hou
+自	90750	zi
+以	90500	yi
+会	90250	hui
+家	90000	jia
+可	89750	ke
+下	89500	xia
+而	89250	er
+过	89000	guo
+天	88750	tian
+去	88500	qu
+能	88250	neng
+对	88000	dui
+小	87750	xiao
+多	87500	duo
+然	87250	ran
+于	87000	yu
+心	86750	xin
+学	86500	xue
+么	86250	me
+之	86000	zhi
+都	85750	dou
+好	85500	hao
+看	85250	kan
+起	85000	qi
+发	84750	fa
+当	84500	dang
+没	84250	mei
+成	84000	cheng
+只	83750	zhi
+如	83500	ru
+事	83250	shi
+把	83000	ba
+还	82750	hai
+用	82500	yong
+第	82250	di
+样	82000	yang
+道	81750	dao
+想	81500	xiang
+作	81250	zuo
+种	81000	zhong
+开	80750	kai
+美	80500	mei
+总	80250	zong
+从	80000	cong
+无	79750	wu
+情	79500	qing
+己	79250	ji
+面	79000	mian
+最	78750	zui
+女	78500	nv
+但	78250	dan
+现	78000	xian
+前	77750	qian
+些	77500	xie
+所	77250	suo
+同	77000	tong
+日	76750	ri
+手	76500	shou
+又	76250	you
+行	76000	xing
+意	75750	yi
+动	75500	dong
+方	75250	fang
+期	75000	qi
+它	74750	ta
+头	74500	tou
+经	74250	jing
+长	74000	chang
+儿	73750	er
+回	73500	hui
+位	73250	wei
+分	73000	fen
+爱	72750	ai
+老	72500	lao
+因	72250	yin
+很	72000	hen
+给	71750	gei
+名	71500	ming
+法	71250	fa
+间	71000	jian
+斯	70750	si
+知	70500	zhi
+世	70250	shi
+什	70000	shen
+两	69750	liang
+次	69500	ci
+使	69250	shi
+身	69000	shen
+者	68750	zhe
+被	68500	bei
+高	68250	gao
+已	68000	yi
+亲	67750	qin
+其	67500	qi
+进	67250	jin
+此	67000	ci
+话	66750	hua
+常	66500	chang
+与	66250	yu
+活	66000	huo
+正	65750	zheng
+感	65500	gan
+见	65250	jian
+明	65000	ming
+问	64750	wen
+力	64500	li
+理	64250	li
+尔	64000	er
+点	63750	dian
+文	63500	wen
+几	63250	ji
+定	63000	ding
+本	62750	ben
+公	62500	gong
+特	62250	te
+做	62000	zuo
+外	61750	wai
+孩	61500	hai
+相	61250	xiang
+西	61000	xi
+果	60750	guo
+走	60500	zou
+将	60250	jiang
+月	60000	yue
+十	59750	shi
+实	59500	shi
+向	59250	xiang
+声	59000	sheng
+车	58750	che
+全	58500	quan
+信	58250	xin
+重	58000	zhong
+三	57750	san
+机	57500	ji
+工	57250	gong
+物	57000	wu
+气	56750	qi
+每	56500	mei
+并	56250	bing
+别	56000	bie
+真	55750	zhen
+打	55500	da
+太	55250	tai
+新	55000	xin
+比	54750	bi
+才	54500	cai
+便	54250	bian
+夫	54000	fu
+再	53750	zai
+书	53500	shu
+部	53250	bu
+水	53000	shui
+像	52750	xiang
+眼	52500	yan
+等	52250	deng
+体	52000	ti
+却	51750	que
+加	51500	jia
+电	51250	dian
+主	51000	zhu
+界	50750	jie
+门	50500	men
+利	50250	li
+海	50000	hai
+受	49750	shou
+听	49500	ting
+表	49250	biao
+德	49000	de
+少	48750	shao
+克	48500	ke
+代	48250	dai
+员	48000	yuan
+许	47750	xu
+先	47500	xian
+口	47250	kou
+由	47000	you
+死	46750	si
+安	46500	an
+写	46250	xie
+性	46000	xing
+马	45750	ma
+光	45500	guang
+白	45250	bai
+或	45000	huo
+住	44750	zhu
+难	44500	nan
+望	44250	wang
+教	44000	jiao
+命	43750	ming
+花	43500	hua
+结	43250	jie
+乐	43000	le
+色	42750	se
+更	42500	geng
+拉	42250	la
+东	42000	dong
+神	41750	shen
+记	41500	ji
+处	41250	chu
+让	41000	rang
+母	40750	mu
+父	40500	fu
+应	40250	ying
+直	40000	zhi
+字	39750	zi
+场	39500	chang
+平	39250	ping
+报	39000	bao
+友	38750	you
+关	38500	guan
+放	38250	fang
+至	38000	zhi
+张	37750	zhang
+认	37500	ren
+接	37250	jie
+告	37000	gao
+入	36750	ru
+笑	36500	xiao
+内	36250	nei
+英	36000	ying
+军	35750	jun
+候	35500	hou
+民	35250	min
+岁	35000	sui
+往	34750	wang
+何	34500	he
+度	34250	du
+山	34000	shan
+觉	33750	jue
+路	33500	lu
+带	33250	dai
+万	33000	wan
+男	32750	nan
+边	32500	bian
+风	32250	feng
+解	32000	jie
+叫	31750	jiao
+任	31500	ren
+金	31250	jin
+快	31000	kuai
+原	30750	yuan
+吃	30500	chi
+妈	30250	ma
+变	30000	bian
+通	29750	tong
+师	29500	shi
+立	29250	li
+象	29000	xiang
+数	28750	shu
+四	28500	si
+失	28250	shi
+满	28000	man
+战	27750	zhan
+远	27500	yuan
+格	27250	ge
+士	27000	shi
+音	26750	yin
+轻	26500	qing
+目	26250	mu
+条	26000	tiao
+呢	25750	ne
+病	25500	bing
+始	25250	shi
+达	25000	da
+九	24750	jiu
+完	24500	wan
+怎	24250	zen
+研	24000	yan
+房	23750	fang
+绿	23500	lv
+首	23250	shou
+片	23000	pian
+晚	22750	wan
+半	22500	ban
+哪	22250	na
+吧	22000	ba
+啊	21750	a
+吗	21500	ma
+呀	21250	ya
+哦	21000	o
+嗯	20750	en
+喂	20500	wei
+拜	20000	bai
+早	19750	zao
+午	19500	wu
+夜	19250	ye
+今	19000	jin
+昨	18750	zuo
+星	18500	xing
+周	18250	zhou
+春	18000	chun
+夏	17750	xia
+秋	17500	qiu
+冬	17250	dong
+热	17000	re
+冷	16750	leng
+温	16500	wen
+雨	16250	yu
+雪	16000	xue
+云	15750	yun
+脑	15500	nao
+邮	15250	you
+钱	15000	qian
+店	14750	dian
+饭	14500	fan
+菜	14250	cai
+茶	14000	cha
+酒	13750	jiu
+奶	13500	nai
+包	13250	bao
+班	13000	ban
+课	12750	ke
+题	12500	ti
+试	12500	shi
+卡	12250	ka
+密	12000	mi
+码	11750	ma
+# ===== 常用词组 =====
+你好	150000	ni hao
+我们	149700	wo men
+你们	149400	ni men
+他们	149100	ta men
+她们	148800	ta men
+自己	148500	zi ji
+什么	148200	shen me
+现在	147900	xian zai
+没有	147600	mei you
+时间	147300	shi jian
+工作	147000	gong zuo
+学习	146700	xue xi
+中国	146400	zhong guo
+世界	146100	shi jie
+经济	145800	jing ji
+文化	145500	wen hua
+发展	145200	fa zhan
+学生	144900	xue sheng
+老师	144600	lao shi
+朋友	144300	peng you
+大家	144000	da jia
+今天	143700	jin tian
+明天	143400	ming tian
+昨天	143100	zuo tian
+时候	142800	shi hou
+东西	142500	dong xi
+地方	142200	di fang
+因为	141900	yin wei
+所以	141600	suo yi
+但是	141300	dan shi
+可以	141000	ke yi
+应该	140700	ying gai
+如果	140400	ru guo
+虽然	140100	sui ran
+已经	139800	yi jing
+知道	139500	zhi dao
+觉得	139200	jue de
+认为	138900	ren wei
+开始	138600	kai shi
+最后	138300	zui hou
+继续	138000	ji xu
+准备	137700	zhun bei
+管理	137400	guan li
+服务	137100	fu wu
+计划	136800	ji hua
+问题	136500	wen ti
+回答	136200	hui da
+说话	135900	shuo hua
+电话	135600	dian hua
+电脑	135300	dian nao
+手机	135000	shou ji
+网络	134700	wang luo
+电影	134400	dian ying
+音乐	134100	yin yue
+旅游	133800	lv you
+历史	133500	li shi
+科学	133200	ke xue
+数学	132900	shu xue
+物理	132600	wu li
+化学	132300	hua xue
+医院	132000	yi yuan
+医生	131700	yi sheng
+护士	131400	hu shi
+警察	131100	jing cha
+父母	130800	fu mu
+爸爸	130500	ba ba
+妈妈	130200	ma ma
+哥哥	129900	ge ge
+姐姐	129600	jie jie
+弟弟	129300	di di
+妹妹	129000	mei mei
+爷爷	128700	ye ye
+奶奶	128400	nai nai
+叔叔	128100	shu shu
+阿姨	127800	a yi
+新闻	127500	xin wen
+报纸	127200	bao zhi
+杂志	126900	za zhi
+文章	126600	wen zhang
+小说	126300	xiao shuo
+故事	126000	gu shi
+感觉	125700	gan jue
+感情	125400	gan qing
+爱情	125100	ai qing
+婚姻	124800	hun yin
+生活	124500	sheng huo
+健康	124200	jian kang
+运动	123900	yun dong
+体育	123600	ti yu
+比赛	123300	bi sai
+足球	123000	zu qiu
+篮球	122700	lan qiu
+天气	122400	tian qi
+下雨	122100	xia yu
+下雪	121800	xia xue
+温暖	121500	wen nuan
+寒冷	121200	han leng
+凉快	120900	liang kuai
+春天	120600	chun tian
+夏天	120300	xia tian
+秋天	120000	qiu tian
+冬天	119700	dong tian
+星期	119400	xing qi
+马上	119100	ma shang
+立刻	118800	li ke
+突然	118500	tu ran
+一直	118200	yi zhi
+永远	117900	yong yuan
+经常	117600	jing chang
+偶尔	117300	ou er
+从来	117000	cong lai
+总是	116700	zong shi
+可能	116400	ke neng
+一定	116100	yi ding
+必须	115800	bi xu
+需要	115500	xu yao
+希望	115200	xi wang
+梦想	114900	meng xiang
+理想	114600	li xiang
+努力	114300	nu li
+成功	114000	cheng gong
+失败	113700	shi bai
+经历	113400	jing li
+经验	113100	jing yan
+能力	112800	neng li
+技术	112500	ji shu
+技能	112200	ji neng
+知识	111900	zhi shi
+思想	111600	si xiang
+精神	111300	jing shen
+态度	111000	tai du
+风格	110700	feng ge
+方式	110400	fang shi
+方法	110100	fang fa
+手段	109800	shou duan
+措施	109500	cuo shi
+效果	109200	xiao guo
+结果	108900	jie guo
+成果	108600	cheng guo
+成绩	108300	cheng ji
+进步	108000	jin bu
+提高	107700	ti gao
+改善	107400	gai shan
+完善	107100	wan shan
+保持	106800	bao chi
+维持	106500	wei chi
+停止	106200	ting zhi
+结束	105900	jie shu
+完成	105600	wan cheng
+启动	105300	qi dong
+关闭	105000	guan bi
+打开	104700	da kai
+文件	104400	wen jian
+数据	104100	shu ju
+系统	103800	xi tong
+软件	103500	ruan jian
+程序	103200	cheng xu
+设计	102900	she ji
+开发	102600	kai fa
+测试	102300	ce shi
+运行	102000	yun xing
+安装	101700	an zhuang
+更新	101400	geng xin
+版本	101100	ban ben
+发布	100800	fa bu
+消息	100500	xiao xi
+通知	100200	tong zhi
+邮件	99900	you jian
+地址	99600	di zhi
+用户	99300	yong hu
+密码	99000	mi ma
+账号	98700	zhang hao
+登录	98400	deng lu
+搜索	98100	sou suo
+点击	97800	dian ji
+页面	97500	ye mian
+图片	97200	tu pian
+视频	96900	shi pin
+直播	96600	zhi bo
+购物	96300	gou wu
+支付	96000	zhi fu
+银行	95700	yin hang
+价格	95400	jia ge
+商品	95100	shang pin
+质量	94800	zhi liang
+数量	94500	shu liang
+颜色	94200	yan se
+尺寸	93900	chi cun
+衣服	93600	yi fu
+鞋子	93300	xie zi
+食物	93000	shi wu
+水果	92700	shui guo
+苹果	92400	ping guo
+香蕉	92100	xiang jiao
+西瓜	91800	xi gua
+牛奶	91500	niu nai
+面包	91200	mian bao
+鸡蛋	90900	ji dan
+米饭	90600	mi fan
+面条	90300	mian tiao
+早餐	90000	zao can
+午餐	89700	wu can
+晚餐	89400	wan can
+城市	89100	cheng shi
+农村	88800	nong cun
+街道	88500	jie dao
+公园	88200	gong yuan
+学校	87900	xue xiao
+教室	87600	jiao shi
+图书馆	87300	tu shu guan
+办公室	87000	ban gong shi
+公司	86700	gong si
+企业	86400	qi ye
+市场	86100	shi chang
+客户	85800	ke hu
+产品	85500	chan pin
+项目	85200	xiang mu
+团队	84900	tuan dui
+领导	84600	ling dao
+员工	84300	yuan gong
+会议	84000	hui yi
+报告	83700	bao gao
+总结	83400	zong jie
+分析	83100	fen xi
+研究	82800	yan jiu
+调查	82500	diao cha
+培训	82200	pei xun
+招聘	81900	zhao pin
+工资	81600	gong zi
+奖金	81300	jiang jin
+保险	81000	bao xian
+合同	80700	he tong
+法律	80400	fa lv
+政府	80100	zheng fu
+社会	79800	she hui
+政策	79500	zheng ce
+环境	79200	huan jing
+资源	78900	zi yuan
+能源	78600	neng yuan
+交通	78300	jiao tong
+飞机	78000	fei ji
+火车	77700	huo che
+汽车	77400	qi che
+自行车	77100	zi xing che
+地铁	76800	di tie
+机场	76500	ji chang
+车站	76200	che zhan
+酒店	75900	jiu dian
+宾馆	75600	bin guan
+餐厅	75300	can ting
+厨房	75000	chu fang
+卧室	74700	wo shi
+客厅	74400	ke ting
+厕所	74100	ce suo
+洗澡	73800	xi zao
+睡觉	73500	shui jiao
+起床	73200	qi chuang
+刷牙	72900	shua ya
+洗脸	72600	xi lian
+休息	72300	xiu xi
+高兴	72000	gao xing
+快乐	71700	kuai le
+生气	71400	sheng qi
+难过	71100	nan guo
+开心	70800	kai xin
+幸福	70500	xing fu
+漂亮	70200	piao liang
+帅气	69900	shuai qi
+聪明	69600	cong ming
+愚蠢	69300	yu chun
+勤劳	69000	qin lao
+认真	68700	ren zhen
+仔细	68400	zai xi
+马虎	68100	ma hu
+安静	67800	an jing
+热闹	67500	re nao
+干净	67200	gan jing
+整齐	66900	zheng qi
+混乱	66600	hun luan
+方便	66300	fang bian
+麻烦	66000	ma fan
+简单	65700	jian dan
+复杂	65400	fu za
+容易	65100	rong yi
+困难	64800	kun nan
+重要	64500	zhong yao
+普通	64200	pu tong
+特殊	63900	te shu
+稀奇	63600	xi qi
+常见	63300	chang jian
+罕见	63000	han jian
+古老	62700	gu lao
+现代	62400	xian dai
+未来	62100	wei lai
+过去	61800	guo qu
+回忆	61500	hui yi
+记忆	61200	ji yi
+忘记	60900	wang ji
+想念	60600	xiang nian
+思念	60300	si nian
+关心	60000	guan xin
+帮助	59700	bang zhu
+支持	59400	zhi chi
+反对	59100	fan dui
+同意	58800	tong yi
+拒绝	58500	ju jue
+接受	58200	jie shou
+理解	57900	li jie
+原谅	57600	yuan liang
+道歉	57300	dao qian
+感谢	57000	gan xie
+祝福	56700	zhu fu
+庆祝	56400	qing zhu
+祝贺	56100	zhu he
+奖励	55800	jiang li
+惩罚	55500	cheng fa
+表扬	55200	biao yang
+批评	54900	pi ping
+建议	54600	jian yi
+意见	54300	yi jian
+决定	54000	jue ding
+选择	53700	xuan ze
+放弃	53400	fang qi
+坚持	53100	jian chi
+奋斗	52800	fen dou
+拼搏	52500	pin bo
+进取	52200	jin qu
+成长	51900	cheng zhang
+成熟	51600	cheng shu
+天真	51300	tian zhen
+浪漫	51000	lang man
+温柔	50700	wen rou
+勇敢	50400	yong gan
+胆小	50100	dan xiao
+害怕	49800	hai pa
+紧张	49500	jin zhang
+放松	49200	fang song
+平静	48900	ping jing
+兴奋	48600	xing fen
+激动	48300	ji dong
+感动	48000	gan dong
+惊讶	47700	jing ya
+失望	47400	shi wang
+绝望	47100	jue wang
+坚强	46800	jian qiang
+脆弱	46500	cui ruo
+自信	46200	zi xin
+骄傲	45900	jiao ao
+谦虚	45600	qian xu
+西安	10000	xi an
