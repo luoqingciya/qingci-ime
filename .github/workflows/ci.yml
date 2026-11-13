@@ -45,12 +45,14 @@ jobs:
 
       - name: Stage install tree & package
         run: |
-          cmake --install addon/build --prefix pkg/usr
+          # FCITX_INSTALL_LIBDIR 等为绝对路径，--prefix 不生效，须用 DESTDIR
+          DESTDIR="$PWD/pkg" cmake --install addon/build
           cp README.md LICENSE pkg/
-          mkdir -p pkg/usr/share/doc/qingci-ime
-          cp docs/BUILD-UBUNTU.md pkg/usr/share/doc/qingci-ime/
-          tar -czf "qingci-ime-${GITHUB_REF_NAME#refs/}-linux-amd64.tar.gz" -C pkg .
-          tar -tzf "qingci-ime-${GITHUB_REF_NAME#refs/}-linux-amd64.tar.gz"
+          mkdir -p pkg/usr/local/share/doc/qingci-ime
+          cp docs/BUILD-UBUNTU.md pkg/usr/local/share/doc/qingci-ime/
+          PKG_NAME="qingci-ime-${GITHUB_REF_NAME#refs/}-linux-amd64.tar.gz"
+          tar -czf "$PKG_NAME" -C pkg .
+          tar -tzf "$PKG_NAME"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
