@@ -236,11 +236,11 @@ void QingciEngine::keyEvent(const InputMethodEntry &entry,
         const bool shift = (key.states() & KeyState::Shift);
         auto list = ic->inputPanel().candidateList();
         if (list && !list->empty()) {
-            if (auto *pageable = list->toPageable()) {
+            if (auto *movable = list->toCursorMovable()) {
                 if (shift) {
-                    pageable->prevCandidate();
+                    movable->prevCandidate();
                 } else {
-                    pageable->nextCandidate();
+                    movable->nextCandidate();
                 }
                 ic->updateUserInterface(UserInterfaceComponent::InputPanel);
                 keyEvent.filterAndAccept();
