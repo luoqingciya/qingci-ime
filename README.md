@@ -71,4 +71,4 @@ cargo run --bin qingcli -- data/qingci.dic
 
 ## 许可
 
-GPL-2.0-or-later
+MIT（LICENSE）。Fcitx5 框架本体为 LGPL-2.1+，本插件以独立动态库形式链接，许可互不传染。

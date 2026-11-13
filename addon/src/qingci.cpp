@@ -4,7 +4,7 @@
  * 通过 C ABI 调用 Rust 核心引擎（libqingci_core.a）完成候选词查询
  * 与用户词频学习；本文件负责按键处理、预编辑与候选列表 UI。
  *
- * SPDX-License-Identifier: GPL-2.0-or-later
+ * SPDX-License-Identifier: MIT
  */
 #include <cctype>
 #include <cstdlib>
