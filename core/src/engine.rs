@@ -428,6 +428,71 @@ mod tests {
     }
 
     #[test]
+    fn select_invalid_index_returns_none() {
+        let e = engine();
+        assert!(e.select(0).is_none(), "未查询时 select 应返回 None");
+        let cands = e.search("wo");
+        let len = cands.len();
+        assert!(e.select(len).is_none(), "越界序号应返回 None");
+        assert!(e.select(1).is_some());
+
+        let empty = QingciEngine::empty();
+        assert!(empty.select(0).is_none());
+    }
+
+    #[test]
+    fn user_freq_persists_across_engine_instances() {
+        let dict = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("data")
+            .join("qingci.dic");
+        let user_path = user_file("persist");
+        let _ = std::fs::remove_file(&user_path);
+
+        // 实例 A：查询并选中，词频落盘
+        let a = QingciEngine::new(&dict, &user_path).expect("load dict");
+        let _ = a.search("nh");
+        assert_eq!(a.select(0).as_deref(), Some("你好"));
+        a.save();
+
+        // 实例 B：加载同一用户词频文件，选中词应获得加权
+        let b = QingciEngine::new(&dict, &user_path).expect("reload dict");
+        let cands = b.search("nh");
+        assert_eq!(cands[0].word, "你好");
+
+        // 文件内容可被重新解析
+        let text = std::fs::read_to_string(&user_path).expect("persisted");
+        assert!(text.lines().any(|l| l.starts_with("你好\t")));
+    }
+
+    #[test]
+    fn overlong_input_returns_empty() {
+        let e = engine();
+        let long_input = "a".repeat(51);
+        assert!(e.search(&long_input).is_empty());
+        // 长度恰在上限内则正常
+        let ok_input = "a".repeat(20);
+        let _ = e.search(&ok_input);
+    }
+
+    #[test]
+    fn candidates_sorted_by_score_desc() {
+        let e = engine();
+        for input in ["wo", "nih", "wm", "shi"] {
+            let cands = e.search(input);
+            for w in cands.windows(2) {
+                assert!(
+                    w[0].score >= w[1].score,
+                    "input={input}: {}:{} < {}:{}",
+                    w[0].word,
+                    w[0].score,
+                    w[1].word,
+                    w[1].score
+                );
+            }
+        }
+    }
+
+    #[test]
     fn apostrophe_forces_boundary() {
         let e = engine();
         let cands = e.search("xi'an");

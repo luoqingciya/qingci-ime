@@ -220,4 +220,37 @@ mod tests {
         assert!(!keys.iter().any(|k| k.ends_with(" xi")));
         assert!(!keys.iter().any(|k| k.ends_with(" ge")));
     }
+
+    #[test]
+    fn load_builtin_dictionary() {
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("data");
+        let (dict, skipped) =
+            Dictionary::load(&dir.join("qingci.dic")).expect("内置词库应可加载");
+        // 内置词库应包含全部有效词条且无跳过行
+        assert!(dict.entries.len() >= 600, "{}", dict.entries.len());
+        assert_eq!(skipped, 0);
+        // 单字与词组均可查到
+        assert!(!dict.lookup_in(KeyKind::Full, "wo").is_empty());
+        assert!(!dict.lookup_in(KeyKind::Full, "ni hao").is_empty());
+    }
+
+    #[test]
+    fn load_missing_file_errors() {
+        let err = Dictionary::load(Path::new("/nonexistent/qingci.dic"))
+            .expect_err("缺失文件应报错");
+        assert!(err.contains("无法读取"));
+    }
+
+    #[test]
+    fn lookup_falls_back_through_key_kinds() {
+        let (dict, _) = Dictionary::parse("我们\t100\two men\n");
+        // 全拼键
+        assert_eq!(dict.lookup("wo men").len(), 1);
+        // 全拼未命中 -> 末字全拼键
+        assert_eq!(dict.lookup("w men").len(), 1);
+        // 末字全拼未命中 -> 全简拼键
+        assert_eq!(dict.lookup("w m").len(), 1);
+        // 三种键都未命中
+        assert!(dict.lookup("x y z").is_empty());
+    }
 }
