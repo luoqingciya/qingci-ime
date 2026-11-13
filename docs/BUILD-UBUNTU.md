@@ -1,4 +1,4 @@
-# 青瓷拼音 —— Ubuntu 26.04.1 LTS 构建与使用文档
+# 清辞拼音 —— Ubuntu 26.04.1 LTS 构建与使用文档
 
 ## 一、安装依赖
 
@@ -62,9 +62,9 @@ cd qingci-ime
    fcitx5-configtool
    ```
 
-   在「输入法」列表中取消「仅显示当前语言」，搜索 **青瓷拼音** 并添加。
+   在「输入法」列表中取消「仅显示当前语言」，搜索 **清辞拼音** 并添加。
 
-3. 使用 `Ctrl+Space` 切换到青瓷拼音。
+3. 使用 `Ctrl+Space` 切换到清辞拼音。
 
 ## 四、按键说明（MVP）
 
@@ -99,7 +99,7 @@ xi'an   → 1.西安 …
 
 ## 六、排错
 
-- **配置工具里找不到青瓷拼音**：确认
+- **配置工具里找不到清辞拼音**：确认
   `/usr/share/fcitx5/addon/qingci-addon.conf` 与
   `/usr/share/fcitx5/inputmethod/qingci.conf` 存在；查看
   `fcitx5` 终端日志是否报 `Could not locate library libqingci.so`。
