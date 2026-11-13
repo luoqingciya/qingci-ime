@@ -49,7 +49,7 @@
 Ubuntu 版本的 deb 包（CI 自动构建并实测安装）：
 
 ```bash
-sudo apt install ./qingci-ime_0.2.4_ubuntu26.10_amd64.deb
+sudo apt install ./qingci-ime_0.2.5_ubuntu26.10_amd64.deb
 sudo qingci-setup        # 一键配置：切换 fcitx5 + 写入环境变量
 # 注销重新登录 → fcitx5-configtool 添加「清辞拼音」 → Ctrl+Space 切换
 ```

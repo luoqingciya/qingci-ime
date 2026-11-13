@@ -23,6 +23,7 @@
 #include <fcitx/text.h>
 #include <fcitx-utils/key.h>
 #include <fcitx-utils/keysym.h>
+#include <fcitx-utils/log.h>
 
 // CMake 注入的词库默认安装路径
 #ifndef QINGCI_DICT_PATH
@@ -186,6 +187,10 @@ QingciEngine::QingciEngine(Instance *instance) : instance_(instance) {
                                       + "/.local/share/qingci/user.dic"
                                 : "/tmp/qingci-user.dic";
     core_ = qingci_engine_new(QINGCI_DICT_PATH, userPath.c_str());
+    if (!core_) {
+        FCITX_WARN() << "qingci: 词库加载失败，输入将无候选。路径: "
+                     << QINGCI_DICT_PATH;
+    }
 
     selectionKeys_ = {Key(FcitxKey_1), Key(FcitxKey_2), Key(FcitxKey_3),
                       Key(FcitxKey_4), Key(FcitxKey_5), Key(FcitxKey_6),

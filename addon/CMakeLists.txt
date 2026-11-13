@@ -4,7 +4,7 @@
 #     -DQINGCI_CORE_STATIC_LIB=<path>/libqingci_core.a \
 #     -DQINGCI_CORE_DICT_PATH=<path>/qingci.dic
 cmake_minimum_required(VERSION 3.16)
-project(fcitx5-qingci VERSION 0.2.4 LANGUAGES CXX)
+project(fcitx5-qingci VERSION 0.2.5 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 find_package(ECM REQUIRED)
@@ -20,6 +20,12 @@ if(NOT QINGCI_CORE_DICT_PATH)
     # 默认安装全量词库；演示词库为 core/data/qingci.dic
     set(QINGCI_CORE_DICT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../core/data/qingci-full.dic")
 endif()
+# 运行时词库路径必须指向安装位置（而非构建目录）；
+# 源码运行调试可用 -DQINGCI_RUNTIME_DICT_PATH 覆盖。
+if(NOT QINGCI_RUNTIME_DICT_PATH)
+    set(QINGCI_RUNTIME_DICT_PATH
+        "${FCITX_INSTALL_PKGDATADIR}/qingci/qingci-full.dic")
+endif()
 
 add_fcitx5_addon(qingci src/qingci.cpp)
 target_link_libraries(qingci
@@ -29,7 +35,7 @@ target_link_libraries(qingci
     m
 )
 target_compile_definitions(qingci PRIVATE
-    QINGCI_DICT_PATH="${QINGCI_CORE_DICT_PATH}"
+    QINGCI_DICT_PATH="${QINGCI_RUNTIME_DICT_PATH}"
 )
 
 install(TARGETS qingci DESTINATION "${FCITX_INSTALL_LIBDIR}/fcitx5")
