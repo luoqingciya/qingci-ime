@@ -105,9 +105,10 @@ jobs:
           {
             echo "#!/bin/sh"
             echo "set -e"
-            echo "echo \"清辞拼音已安装。请重启 fcitx5 并在配置工具中添加「清辞拼音」：\""
-            echo "echo \"  killall fcitx5; fcitx5 -d; fcitx5-configtool\""
-            echo "echo \"如系统尚未启用 fcitx5：im-config -n fcitx5 后注销重新登录。\""
+            echo "echo \"清辞拼音已安装。一键配置系统输入法框架（推荐）：\""
+            echo "echo \"  sudo qingci-setup\""
+            echo "echo \"然后注销重新登录，运行 fcitx5-configtool 添加「清辞拼音」。\""
+            echo "echo \"（或参考 /usr/share/doc/qingci-ime/BUILD-UBUNTU.md 手动配置）\""
           } > stage/DEBIAN/postinst
           chmod 755 stage/DEBIAN/postinst
           dpkg-deb --build --root-owner-group stage "${DEB_BASE}.deb"
