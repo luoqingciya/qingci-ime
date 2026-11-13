@@ -43,6 +43,16 @@
 
 ## 快速开始（Ubuntu 26.04.1）
 
+### 安装包（推荐）
+
+从 [Releases](https://github.com/luoqingciya/qingci-ime/releases) 下载 deb 包（CI 自动构建）：
+
+```bash
+sudo apt install ./qingci-ime_0.2.0_amd64.deb
+```
+
+### 从源码构建
+
 ```bash
 # 依赖
 sudo apt install build-essential cmake extra-cmake-modules \
@@ -53,7 +63,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ./scripts/build-ubuntu.sh
 ```
 
-详细步骤、 Wayland/X11 启用方法与排错见 [docs/BUILD-UBUNTU.md](docs/BUILD-UBUNTU.md)。
+详细步骤、 deb/tar 说明、Wayland/X11 启用方法与排错见
+[docs/BUILD-UBUNTU.md](docs/BUILD-UBUNTU.md)。
 
 ## 核心引擎独立使用
 
