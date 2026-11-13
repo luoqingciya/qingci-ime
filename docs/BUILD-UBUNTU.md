@@ -28,8 +28,8 @@ source "$HOME/.cargo/env"
 对应版本的 deb（CI 在各发行版容器内构建并实测安装）：
 
 ```bash
-sudo apt install ./qingci-ime_0.2.7_ubuntu26.10_amd64.deb
-# 或：sudo dpkg -i qingci-ime_0.2.7_ubuntu26.10_amd64.deb
+sudo apt install ./qingci-ime_0.2.8_ubuntu26.10_amd64.deb
+# 或：sudo dpkg -i qingci-ime_0.2.8_ubuntu26.10_amd64.deb
 ```
 
 包内含插件、词库、文档与一键配置脚本，依赖（fcitx5 ≥ 5.1.19）由 apt
@@ -44,7 +44,7 @@ sudo apt install ./qingci-ime_0.2.7_ubuntu26.10_amd64.deb
 从 Releases 下载 `qingci-ime_<版本>-linux-amd64.tar.gz`，解压到根目录：
 
 ```bash
-sudo tar -xzf qingci-ime_0.2.7-linux-amd64.tar.gz -C /
+sudo tar -xzf qingci-ime_0.2.8-linux-amd64.tar.gz -C /
 ```
 
 ### 方式 C：源码构建
