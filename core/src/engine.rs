@@ -332,10 +332,19 @@ mod tests {
     use super::*;
     use std::path::PathBuf;
 
+    /// 并行测试共用临时文件会互相删除，按测试名 + 进程号隔离。
+    fn user_file(name: &str) -> PathBuf {
+        std::env::temp_dir().join(format!(
+            "qingci-test-{}-{}.dic",
+            name,
+            std::process::id()
+        ))
+    }
+
     fn engine() -> QingciEngine {
         let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let dict = dir.join("data").join("qingci.dic");
-        let user = std::env::temp_dir().join("qingci-test-user.dic");
+        let user = user_file("default");
         let _ = std::fs::remove_file(&user);
         QingciEngine::new(&dict, &user).expect("load dict")
     }
@@ -400,7 +409,12 @@ mod tests {
 
     #[test]
     fn learning_boosts() {
-        let e = engine();
+        let dict = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("data")
+            .join("qingci.dic");
+        let user_path = user_file("learning");
+        let _ = std::fs::remove_file(&user_path);
+        let e = QingciEngine::new(&dict, &user_path).expect("load dict");
         let base = e.search("wm");
         let _ = e.select(0);
         // 再查一次，被选中的词仍在首位或显著提前
@@ -408,8 +422,8 @@ mod tests {
         assert!(!again.is_empty());
         assert_eq!(again[0].word, base[0].word);
         // 用户词频已持久化
-        let user_path = std::env::temp_dir().join("qingci-test-user.dic");
-        let text = std::fs::read_to_string(&user_path).unwrap();
+        let text = std::fs::read_to_string(&user_path)
+            .expect("用户词频文件应已写入");
         assert!(text.contains("我们"));
     }
 
