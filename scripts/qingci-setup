@@ -62,7 +62,12 @@ fi
 CUI_CONF="$USER_HOME/.config/fcitx5/conf/classicui.conf"
 if [ ! -f "$CUI_CONF" ]; then
     mkdir -p "$(dirname "$CUI_CONF")"
+    # 注意：fcitx5 的 addon 配置为平铺键值（无 [ClassicUI] 段头），
+    # 加段头会导致键被忽略、主题静默回退 default。为兼容旧版同时写一份段头形式。
     cat > "$CUI_CONF" <<'CONF'
+Theme=qingci-dark
+Vertical Candidate List=False
+
 [ClassicUI]
 Theme=qingci-dark
 Vertical Candidate List=False
