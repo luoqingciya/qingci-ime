@@ -80,6 +80,8 @@ public:
     Mode mode_ = Mode::Normal;
     bool dqOpen_ = true; // 双引号配对：true -> 下一个输出“
     bool sqOpen_ = true; // 单引号配对：true -> 下一个输出‘
+    bool shiftPressed_ = false;      // 单击 Shift 检测
+    bool otherKeyDuringShift_ = false;
 };
 
 // ---------------------------------------------------------------------------
@@ -129,6 +131,7 @@ private:
     QingciCore *core_ = nullptr;
     KeyList selectionKeys_;
     bool puncEnabled_ = true;
+    bool english_ = false; // 中/英模式（单击 Shift 切换）
     FactoryFor<QingciState> factory_{
         [this](InputContext &) { return new QingciState(this); }};
 
@@ -217,14 +220,42 @@ void QingciEngine::save() {
 void QingciEngine::keyEvent(const InputMethodEntry &entry,
                             KeyEvent &keyEvent) {
     (void)entry;
-    if (keyEvent.isRelease()) {
-        return;
-    }
 
     auto *ic = keyEvent.inputContext();
     auto *st = state(ic);
     const auto &key = keyEvent.key();
     const auto sym = key.sym();
+
+    // 单击 Shift 切换中/英（按下与释放之间无其他按键才视为单击）
+    if (sym == FcitxKey_Shift_L || sym == FcitxKey_Shift_R) {
+        if (keyEvent.isRelease()) {
+            if (st->shiftPressed_ && !st->otherKeyDuringShift_) {
+                english_ = !english_;
+                st->reset();
+                ic->inputPanel().reset();
+                ic->inputPanel().setAuxUp(
+                    Text(english_ ? "英文" : "中文"));
+                ic->updateUserInterface(
+                    UserInterfaceComponent::InputPanel);
+            }
+            st->shiftPressed_ = false;
+            st->otherKeyDuringShift_ = false;
+        } else {
+            st->shiftPressed_ = true;
+            st->otherKeyDuringShift_ = false;
+        }
+        return; // Shift 本身放行
+    }
+
+    if (keyEvent.isRelease()) {
+        return;
+    }
+    st->otherKeyDuringShift_ = true;
+
+    // 英文模式：全部按键透传给应用
+    if (english_) {
+        return;
+    }
 
     // 0) Ctrl+. 切换中文/英文标点
     if ((key.states() & KeyState::Ctrl) && sym == FcitxKey_period) {
@@ -334,11 +365,14 @@ void QingciEngine::keyEvent(const InputMethodEntry &entry,
     // 9) 翻页：= / PageDown / Down；- / PageUp / Up
     if (sym == FcitxKey_equal || sym == FcitxKey_Page_Down ||
         sym == FcitxKey_Down) {
-        if (auto *pageable = ic->inputPanel().candidateList()->toPageable()) {
-            if (pageable->hasNext()) {
-                pageable->next();
-                ic->updateUserInterface(
-                    UserInterfaceComponent::InputPanel);
+        auto list = ic->inputPanel().candidateList();
+        if (list && !list->empty()) {
+            if (auto *pageable = list->toPageable()) {
+                if (pageable->hasNext()) {
+                    pageable->next();
+                    ic->updateUserInterface(
+                        UserInterfaceComponent::InputPanel);
+                }
             }
         }
         keyEvent.filterAndAccept();
@@ -346,11 +380,14 @@ void QingciEngine::keyEvent(const InputMethodEntry &entry,
     }
     if (sym == FcitxKey_minus || sym == FcitxKey_Page_Up ||
         sym == FcitxKey_Up) {
-        if (auto *pageable = ic->inputPanel().candidateList()->toPageable()) {
-            if (pageable->hasPrev()) {
-                pageable->prev();
-                ic->updateUserInterface(
-                    UserInterfaceComponent::InputPanel);
+        auto list = ic->inputPanel().candidateList();
+        if (list && !list->empty()) {
+            if (auto *pageable = list->toPageable()) {
+                if (pageable->hasPrev()) {
+                    pageable->prev();
+                    ic->updateUserInterface(
+                        UserInterfaceComponent::InputPanel);
+                }
             }
         }
         keyEvent.filterAndAccept();
