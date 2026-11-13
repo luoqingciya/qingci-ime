@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 青瓷拼音 —— Ubuntu 26.04.1 LTS 一键构建安装脚本
+# 清辞拼音 —— Ubuntu 26.04.1 LTS 一键构建安装脚本
 # 用法：./scripts/build-ubuntu.sh [安装|构建二选一]
 #   默认：构建并安装（需要 sudo）
 #   SKIP_INSTALL=1 ./scripts/build-ubuntu.sh  # 只构建不安装
@@ -31,6 +31,6 @@ cat <<'EOF'
 
 安装完成。后续步骤：
   1. 重启 fcitx5：  killall fcitx5 && fcitx5 -d
-  2. 打开 fcitx5 配置工具（fcitx5-configtool），在输入法列表中添加「青瓷拼音」
+  2. 打开 fcitx5 配置工具（fcitx5-configtool），在输入法列表中添加「清辞拼音」
   3. 如系统尚未启用 fcitx5：im-config -n fcitx5 后注销重新登录
 EOF

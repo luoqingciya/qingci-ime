@@ -184,7 +184,7 @@ pub fn expand_partial_key(which: KeyKind, elems: &[String]) -> Vec<String> {
 mod tests {
     use super::*;
 
-    const SAMPLE: &str = "你好\t999999\tni hao\n# 注释\n青瓷\t5000\tqing ci\n";
+    const SAMPLE: &str = "你好\t999999\tni hao\n# 注释\n清辞\t5000\tqing ci\n";
 
     #[test]
     fn parse_and_index() {

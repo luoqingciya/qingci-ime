@@ -1,4 +1,4 @@
-# 青瓷拼音（Qingci IME）
+# 清辞拼音（Qingci IME）
 
 基于 **Ubuntu 26.04.1 LTS + Fcitx5** 的简体中文拼音输入法。
 

@@ -70,6 +70,6 @@ jobs:
         run: |
           gh release create "$GITHUB_REF_NAME" \
             --repo "$GITHUB_REPOSITORY" \
-            --title "青瓷拼音 $GITHUB_REF_NAME" \
+            --title "清辞拼音 $GITHUB_REF_NAME" \
             --generate-notes \
             *.tar.gz

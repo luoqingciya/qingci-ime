@@ -2,7 +2,7 @@
 name = "qingci-core"
 version = "0.1.0"
 edition = "2021"
-description = "Qingci (青瓷) Chinese pinyin input method core engine"
+description = "Qingci (清辞) Chinese pinyin input method core engine"
 license = "MIT"
 
 [lib]
