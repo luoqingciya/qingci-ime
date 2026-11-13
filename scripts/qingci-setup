@@ -58,6 +58,20 @@ X-GNOME-Autostart-enabled=true
 DESKTOP
 fi
 
+# 4) 应用深色圆角候选窗口主题（仅当用户尚未自定义经典界面配置时）
+CUI_CONF="$USER_HOME/.config/fcitx5/conf/classicui.conf"
+if [ ! -f "$CUI_CONF" ]; then
+    mkdir -p "$(dirname "$CUI_CONF")"
+    cat > "$CUI_CONF" <<'CONF'
+[ClassicUI]
+Theme=qingci-dark
+Vertical Candidate List=False
+CONF
+    if [ -n "$RUN_AS" ]; then
+        chown -R "$RUN_AS:$RUN_AS" "$USER_HOME/.config/fcitx5"
+    fi
+fi
+
 cat <<'EOF'
 
 配置完成。请执行以下两步：

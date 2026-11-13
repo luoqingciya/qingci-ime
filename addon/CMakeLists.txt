@@ -4,7 +4,7 @@
 #     -DQINGCI_CORE_STATIC_LIB=<path>/libqingci_core.a \
 #     -DQINGCI_CORE_DICT_PATH=<path>/qingci.dic
 cmake_minimum_required(VERSION 3.16)
-project(fcitx5-qingci VERSION 0.2.6 LANGUAGES CXX)
+project(fcitx5-qingci VERSION 0.2.7 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 find_package(ECM REQUIRED)
@@ -51,3 +51,7 @@ install(FILES "${QINGCI_CORE_DICT_PATH}"
 install(FILES data/qingci.svg
         DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"
         RENAME qingci.svg)
+install(FILES themes/qingci-dark/theme.conf
+              themes/qingci-dark/background.png
+              themes/qingci-dark/highlight.png
+        DESTINATION "${FCITX_INSTALL_PKGDATADIR}/themes/qingci-dark")
