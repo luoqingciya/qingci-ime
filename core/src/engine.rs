@@ -196,6 +196,65 @@ impl QingciEngine {
             .map(|d| d.entries.len())
             .unwrap_or(0)
     }
+
+    /// 联想预测：返回以 `last_word` 末字开头的候选（不含该词本身），
+    /// 用户选过的词置顶，其后按词频降序，最多 50 条。
+    pub fn predict(&self, last_word: &str) -> Vec<Candidate> {
+        let mut inner = self.inner.lock().expect("poisoned");
+        let Some(dict) = inner.dict.as_ref() else {
+            return Vec::new();
+        };
+        let Some(last) = last_word.chars().last() else {
+            return Vec::new();
+        };
+        if !('\u{4E00}'..='\u{9FFF}').contains(&last) {
+            return Vec::new();
+        }
+
+        let mut scored: Vec<(u32, u64)> = dict
+            .predict_ids(last)
+            .iter()
+            .filter(|&&id| dict.entries[id as usize].word != last_word)
+            .map(|&id| {
+                let e = &dict.entries[id as usize];
+                let user = inner.user_freq.get(&e.word).copied().unwrap_or(0);
+                (id, layer_score(W_PARTIAL, e.base_freq, user))
+            })
+            .collect();
+        scored.sort_by(|a, b| b.1.cmp(&a.1));
+        scored.truncate(50);
+
+        // 先克隆词表（结束 dict 借用），再更新学习状态
+        let words: Vec<String> = scored
+            .iter()
+            .map(|&(id, _)| dict.entries[id as usize].word.clone())
+            .collect();
+        inner.last_results = scored.iter().map(|&(id, _)| id).collect();
+        words
+            .into_iter()
+            .zip(scored.into_iter().map(|(_, score)| score))
+            .map(|(word, score)| Candidate { word, score })
+            .collect()
+    }
+
+    /// 生成带音节分隔的预编辑串（如 "nihao" -> "ni'hao"）。
+    /// 撇号强制分段原样保留；无法切分的字母串原样返回。
+    pub fn format_preedit(&self, raw: &str) -> String {
+        let input = normalize(raw);
+        if input.is_empty() {
+            return String::new();
+        }
+        let mut segments: Vec<String> = Vec::new();
+        for seg in input.split('\'').filter(|s| !s.is_empty()) {
+            let path = segment(seg);
+            let sylls = path.first().cloned().unwrap_or_default();
+            if sylls.is_empty() {
+                continue;
+            }
+            segments.push(sylls.join("'"));
+        }
+        segments.join("'")
+    }
 }
 
 /// 对一条音节元素序列生成各类查询键并把命中结果并入 `scores`。
@@ -501,6 +560,49 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn predict_by_last_char() {
+        // 构造小型确定性词库验证联想
+        let dir = std::env::temp_dir().join(format!(
+            "qingci-predict-{}",
+            std::process::id()
+        ));
+        std::fs::create_dir_all(&dir).unwrap();
+        let dict_path = dir.join("mini.dic");
+        std::fs::write(
+            &dict_path,
+            "你好\t100\tni hao\n好感\t80\thao gan\n好的\t90\thao de\n\
+             好人\t70\thao ren\n我们\t99\two men\n",
+        )
+        .unwrap();
+        let user = user_file("predict");
+        let _ = std::fs::remove_file(&user);
+        let e = QingciEngine::new(&dict_path, &user).expect("load mini dict");
+
+        // 以「好」开头的词按频次降序，不含「你好」本身
+        let preds = e.predict("你好");
+        let words: Vec<&str> = preds.iter().map(|c| c.word.as_str()).collect();
+        assert_eq!(words, vec!["好的", "好感", "好人"]);
+        // 联想结果可被学习
+        assert_eq!(e.select(0).as_deref(), Some("好的"));
+        // 非中文末字返回空
+        assert!(e.predict("").is_empty());
+        assert!(e.predict("abc").is_empty());
+        assert!(e.predict("我们").is_empty(), "们开头无词");
+    }
+
+    #[test]
+    fn format_preedit_segments() {
+        let e = engine();
+        assert_eq!(e.format_preedit("nihao"), "ni'hao");
+        assert_eq!(e.format_preedit("xi'an"), "xi'an");
+        assert_eq!(e.format_preedit("nh"), "nh");
+        assert_eq!(e.format_preedit("niha"), "ni'ha");
+        assert_eq!(e.format_preedit("NIHAO"), "ni'hao");
+        assert_eq!(e.format_preedit(""), "");
+        assert_eq!(e.format_preedit("wo'ai"), "wo'ai");
     }
 
     #[test]

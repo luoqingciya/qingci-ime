@@ -122,6 +122,56 @@ pub extern "C" fn qingci_engine_select(
     })
 }
 
+/// 联想预测：返回以 `last_word` 末字开头的候选词列表。
+/// 返回候选数量（0 表示无结果，负数表示错误）。
+#[no_mangle]
+pub extern "C" fn qingci_engine_predict(
+    engine: *mut QingciEngine,
+    last_word: *const c_char,
+    out: *mut QingciResults,
+) -> c_int {
+    let Some(engine) = unsafe_ref(engine) else { return -1 };
+    let Some(last_word) = unsafe_ptr_str(last_word) else { return -2 };
+    if out.is_null() {
+        return -3;
+    }
+    let candidates = engine.predict(&last_word);
+    let count = candidates.len() as c_int;
+    let texts: Vec<*mut c_char> = candidates
+        .iter()
+        .map(|c| match CString::new(c.word.as_str()) {
+            Ok(s) => s.into_raw(),
+            Err(_) => ptr::null_mut(),
+        })
+        .collect();
+    let mut texts = texts.into_boxed_slice();
+    let out_ref = unsafe { &mut *out };
+    out_ref.count = count;
+    out_ref.texts = texts.as_mut_ptr();
+    std::mem::forget(texts);
+    count
+}
+
+/// 生成带音节分隔的预编辑串（如 "nihao" -> "ni'hao"）。
+/// 返回线程局部缓冲指针，仅在下次引擎调用前有效；失败返回空指针。
+#[no_mangle]
+pub extern "C" fn qingci_engine_preedit(
+    engine: *mut QingciEngine,
+    input: *const c_char,
+) -> *const c_char {
+    let Some(engine) = unsafe_ref(engine) else { return ptr::null() };
+    let Some(input) = unsafe_ptr_str(input) else { return ptr::null() };
+    thread_local! {
+        static PREEDIT: std::cell::RefCell<CString> =
+            std::cell::RefCell::new(CString::default());
+    }
+    let formatted = engine.format_preedit(&input);
+    PREEDIT.with(|c| {
+        *c.borrow_mut() = CString::new(formatted).unwrap_or_default();
+        c.borrow().as_ptr()
+    })
+}
+
 /// 持久化用户词频。
 #[no_mangle]
 pub extern "C" fn qingci_engine_save(engine: *mut QingciEngine) -> c_int {
@@ -226,6 +276,23 @@ mod tests {
         // 释放与保存
         qingci_results_free(res);
         assert_eq!(qingci_engine_save(e), 0);
+
+        // 联想与预编辑
+        let last = CString::new("你好").unwrap();
+        let mut pres = QingciResults::default();
+        let pn = qingci_engine_predict(e, last.as_ptr(), &mut pres);
+        assert!(pn > 0, "联想应返回候选，got {pn}");
+        // 首候选不应是刚上屏的词本身；具体排序由词库数据决定
+        let first = unsafe { CStr::from_ptr(*pres.texts) };
+        assert_ne!(first.to_str().unwrap(), "你好");
+        qingci_results_free(pres);
+
+        let pinyin = CString::new("nihao").unwrap();
+        let p = qingci_engine_preedit(e, pinyin.as_ptr());
+        assert!(!p.is_null());
+        let p = unsafe { CStr::from_ptr(p) };
+        assert_eq!(p.to_str().unwrap(), "ni'hao");
+
         qingci_engine_free(e);
     }
 
