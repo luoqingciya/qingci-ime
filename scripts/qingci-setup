@@ -1,0 +1,49 @@
+#!/bin/sh
+# 清辞拼音 —— 一键配置脚本（随 deb 安装到 /usr/bin）
+# 作用：把系统输入法框架切换为 fcitx5，并写入 Wayland/X11 会话所需的
+#       输入法环境变量（幂等，可重复执行）。
+# 用法：sudo qingci-setup
+set -e
+
+# 1) 切换 im-config 默认框架为 fcitx5
+if command -v im-config >/dev/null 2>&1; then
+    im-config -n fcitx5
+else
+    echo "提示：未安装 im-config（sudo apt install im-config 后重跑本脚本）"
+fi
+
+# 2) 写入会话环境变量（幂等：已存在则改写，缺省则追加）
+#    GNOME Wayland 会话依赖这些变量把应用输入路由到 fcitx5。
+ENV_FILE=/etc/environment
+touch "$ENV_FILE"
+for kv in \
+    "GTK_IM_MODULE=fcitx" \
+    "QT_IM_MODULE=fcitx" \
+    "XMODIFIERS=@im=fcitx" \
+    "SDL_IM_MODULE=fcitx"; do
+    key="${kv%%=*}"
+    if grep -q "^${key}=" "$ENV_FILE"; then
+        sed -i "s|^${key}=.*|${kv}|" "$ENV_FILE"
+    else
+        echo "$kv" >> "$ENV_FILE"
+    fi
+done
+
+# 3) 确认 fcitx5 开机自启项存在（fcitx5 主包自带，缺则从包内补）
+if [ -f /usr/share/applications/org.fcitx.Fcitx5.desktop ] \
+    && [ ! -f /etc/xdg/autostart/org.fcitx.Fcitx5.desktop ]; then
+    mkdir -p /etc/xdg/autostart
+    cp /usr/share/applications/org.fcitx.Fcitx5.desktop \
+       /etc/xdg/autostart/ 2>/dev/null || true
+fi
+
+cat <<'EOF'
+
+配置完成。请执行以下两步：
+
+  1. 注销并重新登录（环境变量与会话级自动启动生效）
+  2. 运行 fcitx5-configtool，在「输入法」页取消「仅显示当前语言」，
+     搜索「清辞拼音」并添加到列表
+
+之后用 Ctrl+Space 切换到清辞拼音即可输入。
+EOF

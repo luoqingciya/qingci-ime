@@ -25,15 +25,16 @@ source "$HOME/.cargo/env"
 ### 方式 A：安装 deb 包（推荐）
 
 从 [Releases](https://github.com/luoqingciya/qingci-ime/releases) 下载
-`qingci-ime_<版本>_amd64.deb`（CI 在 Ubuntu 26.04 上自动构建）：
+对应版本的 deb（CI 在各发行版容器内构建并实测安装）：
 
 ```bash
-sudo apt install ./qingci-ime_0.2.0_amd64.deb
-# 或：sudo dpkg -i qingci-ime_0.2.0_amd64.deb
+sudo apt install ./qingci-ime_0.2.1_ubuntu26.10_amd64.deb
+# 或：sudo dpkg -i qingci-ime_0.2.1_ubuntu26.10_amd64.deb
 ```
 
-包内含插件、词库与文档，依赖（fcitx5 ≥ 5.1.19）由 apt 自动解析；
-卸载：`sudo apt remove qingci-ime`（用户词频 `~/.local/share/qingci/` 会保留）。
+包内含插件、词库、文档与一键配置脚本，依赖（fcitx5 ≥ 5.1.19）由 apt
+自动解析；卸载：`sudo apt remove qingci-ime`（用户词频
+`~/.local/share/qingci/` 会保留）。
 
 > deb 针对构建时的 fcitx5 版本（Ubuntu 26.04 = 5.1.19）；
 > 其他 Ubuntu 版本请使用方式 B/C。
@@ -43,7 +44,7 @@ sudo apt install ./qingci-ime_0.2.0_amd64.deb
 从 Releases 下载 `qingci-ime_<版本>-linux-amd64.tar.gz`，解压到根目录：
 
 ```bash
-sudo tar -xzf qingci-ime_0.2.0-linux-amd64.tar.gz -C /
+sudo tar -xzf qingci-ime_0.2.1-linux-amd64.tar.gz -C /
 ```
 
 ### 方式 C：源码构建
@@ -73,24 +74,50 @@ cd qingci-ime
 
 ## 三、启用输入法
 
+### 方式 A：一键配置（推荐）
+
+```bash
+sudo qingci-setup
+```
+
+脚本会自动完成：im-config 切换到 fcitx5、写入 Wayland/X11 会话所需的
+输入法环境变量（`GTK_IM_MODULE` / `QT_IM_MODULE` / `XMODIFIERS` /
+`SDL_IM_MODULE`，幂等写入 `/etc/environment`）、确认 fcitx5 开机自启。
+**完成后注销并重新登录**。
+
+### 方式 B：手动配置
+
 1. 将系统输入法框架切换为 fcitx5：
 
    ```bash
    im-config -n fcitx5
    ```
 
-   注销并重新登录（Wayland 会话下 GNOME 需确认未强制 IBus）。
-
-2. 重启 fcitx5 并添加输入法：
+2. 写入会话环境变量（**GNOME Wayland 会话必需**，否则应用仍走 ibus）：
 
    ```bash
-   killall fcitx5; fcitx5 -d
+   sudo tee -a /etc/environment <<'EOF'
+   GTK_IM_MODULE=fcitx
+   QT_IM_MODULE=fcitx
+   XMODIFIERS=@im=fcitx
+   EOF
+   ```
+
+3. 注销并重新登录。登录后 fcitx5 会自动启动（右下角托盘图标）。
+
+4. 添加输入法：
+
+   ```bash
    fcitx5-configtool
    ```
 
-   在「输入法」列表中取消「仅显示当前语言」，搜索 **清辞拼音** 并添加。
+   在「输入法」页**取消「仅显示当前语言」**，搜索 **清辞拼音** 并添加。
 
-3. 使用 `Ctrl+Space` 切换到清辞拼音。
+5. 使用 `Ctrl+Space` 切换到清辞拼音。
+
+> 判断配置是否生效：注销重登后，顶栏不再显示 GNOME 的 ibus「中/A」
+> 键盘指示器，右下角出现 fcitx5 托盘图标；若无 fcitx5 托盘，先运行
+> `fcitx5 -d` 检查报错，并确认 `/etc/environment` 已含上述变量。
 
 ## 四、按键说明（MVP）
 

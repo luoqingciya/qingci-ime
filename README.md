@@ -45,10 +45,13 @@
 
 ### 安装包（推荐）
 
-从 [Releases](https://github.com/luoqingciya/qingci-ime/releases) 下载 deb 包（CI 自动构建）：
+从 [Releases](https://github.com/luoqingciya/qingci-ime/releases) 下载对应
+Ubuntu 版本的 deb 包（CI 自动构建并实测安装）：
 
 ```bash
-sudo apt install ./qingci-ime_0.2.0_amd64.deb
+sudo apt install ./qingci-ime_0.2.1_ubuntu26.10_amd64.deb
+sudo qingci-setup        # 一键配置：切换 fcitx5 + 写入环境变量
+# 注销重新登录 → fcitx5-configtool 添加「清辞拼音」 → Ctrl+Space 切换
 ```
 
 ### 从源码构建
