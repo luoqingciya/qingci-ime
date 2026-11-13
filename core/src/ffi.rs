@@ -166,3 +166,141 @@ fn unsafe_ref<'a>(p: *mut QingciEngine) -> Option<&'a mut QingciEngine> {
         Some(unsafe { &mut *p })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    fn user_file(name: &str) -> PathBuf {
+        std::env::temp_dir().join(format!(
+            "qingci-ffi-{}-{}.dic",
+            name,
+            std::process::id()
+        ))
+    }
+
+    #[test]
+    fn ffi_full_roundtrip() {
+        let dict = CString::new(
+            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .join("data")
+                .join("qingci.dic")
+                .to_str()
+                .expect("utf8 path"),
+        )
+        .unwrap();
+        let user = CString::new(
+            user_file("roundtrip").to_str().expect("utf8 path"),
+        )
+        .unwrap();
+
+        let e = qingci_engine_new(dict.as_ptr(), user.as_ptr());
+        assert!(!e.is_null(), "引擎创建失败");
+
+        // 词条数
+        let count = qingci_engine_entry_count(e);
+        assert!(count >= 600, "count={count}");
+
+        // 查询
+        let input = CString::new("nihao").unwrap();
+        let mut res = QingciResults::default();
+        let n = qingci_engine_search(e, input.as_ptr(), &mut res);
+        assert!(n > 0, "应返回候选数，got {n}");
+        assert_eq!(n, res.count);
+        assert!(!res.texts.is_null());
+        // 首候选应为「你好」
+        let first = unsafe { CStr::from_ptr(*res.texts) };
+        assert_eq!(first.to_str().unwrap(), "你好");
+
+        // 无效序号
+        assert!(qingci_engine_select(e, -1).is_null());
+        assert!(qingci_engine_select(e, 99_999).is_null());
+
+        // 有效序号：返回词与候选一致
+        let word = qingci_engine_select(e, 0);
+        assert!(!word.is_null());
+        let word = unsafe { CStr::from_ptr(word) };
+        assert_eq!(word.to_str().unwrap(), "你好");
+
+        // 释放与保存
+        qingci_results_free(res);
+        assert_eq!(qingci_engine_save(e), 0);
+        qingci_engine_free(e);
+    }
+
+    #[test]
+    fn ffi_null_and_error_paths() {
+        // 空指针创建
+        assert!(qingci_engine_new(ptr::null(), ptr::null()).is_null());
+
+        // 不存在的词库
+        let bad = CString::new("/nonexistent/qingci.dic").unwrap();
+        let user = CString::new(user_file("bad").to_str().unwrap().to_string())
+            .unwrap();
+        assert!(qingci_engine_new(bad.as_ptr(), user.as_ptr()).is_null());
+
+        // 空引擎句柄调用
+        let mut res = QingciResults::default();
+        assert_eq!(
+            qingci_engine_search(ptr::null_mut(), ptr::null(), &mut res),
+            -1
+        );
+        assert_eq!(qingci_engine_entry_count(ptr::null_mut()), -1);
+        assert_eq!(qingci_engine_save(ptr::null_mut()), -1);
+        assert!(qingci_engine_select(ptr::null_mut(), 0).is_null());
+
+        // 输出参数为空
+        let engine = {
+            let dict = CString::new(
+                PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                    .join("data")
+                    .join("qingci.dic")
+                    .to_str()
+                    .unwrap(),
+            )
+            .unwrap();
+            let user = CString::new(
+                user_file("nullout").to_str().unwrap().to_string(),
+            )
+            .unwrap();
+            qingci_engine_new(dict.as_ptr(), user.as_ptr())
+        };
+        assert!(!engine.is_null());
+        let input = CString::new("ni").unwrap();
+        assert_eq!(
+            qingci_engine_search(engine, input.as_ptr(), ptr::null_mut()),
+            -3
+        );
+        qingci_engine_free(engine);
+
+        // 释放空结果不应崩溃
+        qingci_results_free(QingciResults::default());
+        qingci_engine_free(ptr::null_mut());
+    }
+
+    #[test]
+    fn ffi_empty_and_garbage_input() {
+        let dict = CString::new(
+            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .join("data")
+                .join("qingci.dic")
+                .to_str()
+                .unwrap(),
+        )
+        .unwrap();
+        let user = CString::new(user_file("garbage").to_str().unwrap().to_string())
+            .unwrap();
+        let e = qingci_engine_new(dict.as_ptr(), user.as_ptr());
+        assert!(!e.is_null());
+
+        for input in ["", "123!@#", "     "] {
+            let input = CString::new(input).unwrap();
+            let mut res = QingciResults::default();
+            let n = qingci_engine_search(e, input.as_ptr(), &mut res);
+            assert_eq!(n, 0, "input={input:?}");
+            qingci_results_free(res);
+        }
+        qingci_engine_free(e);
+    }
+}

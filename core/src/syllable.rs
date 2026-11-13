@@ -211,4 +211,38 @@ mod tests {
         let paths = segment("nh");
         assert_eq!(paths, vec![vec!["nh".to_string()]]);
     }
+
+    #[test]
+    fn segment_single_zero_initial_syllable() {
+        // 首条路径为最长切分；随后可能带不完整音节路径（多路径枚举）
+        assert_eq!(segment("a"), vec![vec!["a".to_string()]]);
+        assert_eq!(segment("er").first().unwrap(), &vec!["er".to_string()]);
+    }
+
+    #[test]
+    fn initial_takes_first_char() {
+        // zh/ch/sh 也按首字符处理，与主流输入法简拼一致
+        assert_eq!(initial("shi"), 's');
+        assert_eq!(initial("zhuang"), 'z');
+        assert_eq!(initial("ni"), 'n');
+        assert_eq!(initial("a"), 'a');
+    }
+
+    #[test]
+    fn prefix_expansions_all_start_with_prefix() {
+        let exps = syllables_with_prefix("zh");
+        assert!(!exps.is_empty());
+        assert!(exps.contains(&"zhuang"));
+        assert!(exps.iter().all(|s| s.starts_with("zh")));
+        // 不存在的前缀返回空
+        assert!(syllables_with_prefix("xx").is_empty());
+    }
+
+    #[test]
+    fn segment_long_input_terminates() {
+        // 多个音节连打：应能完整切分且路径数有限（输入须为小写，
+        // 大小写归一化由引擎层负责）
+        let paths = segment("woaiBeijingtiananmen".to_lowercase().as_str());
+        assert!(paths.iter().any(|p| p.len() >= 7));
+    }
 }
