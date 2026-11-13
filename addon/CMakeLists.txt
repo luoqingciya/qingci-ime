@@ -4,7 +4,7 @@
 #     -DQINGCI_CORE_STATIC_LIB=<path>/libqingci_core.a \
 #     -DQINGCI_CORE_DICT_PATH=<path>/qingci.dic
 cmake_minimum_required(VERSION 3.16)
-project(fcitx5-qingci VERSION 0.2.8 LANGUAGES CXX)
+project(fcitx5-qingci VERSION 0.2.9 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 find_package(ECM REQUIRED)
