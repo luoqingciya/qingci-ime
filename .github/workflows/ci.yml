@@ -37,33 +37,72 @@ jobs:
 
       - name: Build Fcitx5 addon
         run: |
+          # deb 布局：前缀 /usr + 多元体系库目录，
+          # 使 libqingci.so 落在 /usr/lib/<triplet>/fcitx5/（Ubuntu fcitx5 实际扫描路径）
           cmake -B addon/build -S addon \
             -DQINGCI_CORE_STATIC_LIB="$PWD/core/target/release/libqingci_core.a" \
             -DQINGCI_CORE_DICT_PATH="$PWD/core/data/qingci-full.dic" \
-            -DCMAKE_BUILD_TYPE=Release
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DCMAKE_INSTALL_LIBDIR="lib/$(gcc -dumpmachine)"
           cmake --build addon/build -j"$(nproc)"
 
-      - name: Stage install tree & package
+      - name: Stage install tree & build packages
         run: |
-          # FCITX_INSTALL_LIBDIR 等为绝对路径，--prefix 不生效，须用 DESTDIR
-          DESTDIR="$PWD/pkg" cmake --install addon/build
-          cp README.md LICENSE pkg/
-          mkdir -p pkg/usr/local/share/doc/qingci-ime
-          cp docs/BUILD-UBUNTU.md pkg/usr/local/share/doc/qingci-ime/
+          set -eux
           # REF_NAME 在 pull_request 事件下为 "1/merge"，需替换斜杠
           PKG_REF="${GITHUB_REF_NAME//\//-}"
-          PKG_NAME="qingci-ime-${PKG_REF}-linux-amd64.tar.gz"
-          tar -czf "$PKG_NAME" -C pkg .
-          tar -tzf "$PKG_NAME"
+          VERSION="$(sed -n 's/^project(fcitx5-qingci VERSION \([0-9][0-9.]*\).*/\1/p' addon/CMakeLists.txt | head -1)"
 
-      - name: Upload build artifact
+          DESTDIR="$PWD/stage" cmake --install addon/build
+          mkdir -p stage/usr/share/doc/qingci-ime
+          cp README.md LICENSE stage/usr/share/doc/qingci-ime/
+          cp docs/BUILD-UBUNTU.md stage/usr/share/doc/qingci-ime/
+
+          # ---------- deb 包 ----------
+          mkdir -p stage/DEBIAN
+          {
+            echo "Package: qingci-ime"
+            echo "Version: ${VERSION}"
+            echo "Section: utils"
+            echo "Priority: optional"
+            echo "Architecture: amd64"
+            echo "Maintainer: luoqingci <luoqingci@luoqingciya.com.cn>"
+            echo "Depends: fcitx5 (>= 5.1.19), libgcc-s1, libstdc++6"
+            echo "Recommends: fcitx5-frontend-all, fcitx5-config-qt"
+            echo "Suggests: im-config"
+            echo "Homepage: https://github.com/luoqingciya/qingci-ime"
+            echo "Description: 清辞拼音 —— 基于 Fcitx5 的简体拼音输入法"
+            echo " Rust 核心引擎 + C++ Fcitx5 插件。"
+            echo " 全拼/简拼、42 万词库、中文标点、联想预测、用户词频学习。"
+            echo " 本包针对 Ubuntu 26.04 (fcitx5 5.1.19) 构建，其他版本建议源码安装。"
+          } > stage/DEBIAN/control
+          {
+            echo "#!/bin/sh"
+            echo "set -e"
+            echo "echo \"清辞拼音已安装。请重启 fcitx5 并在配置工具中添加「清辞拼音」：\""
+            echo "echo \"  killall fcitx5; fcitx5 -d; fcitx5-configtool\""
+            echo "echo \"如系统尚未启用 fcitx5：im-config -n fcitx5 后注销重新登录。\""
+          } > stage/DEBIAN/postinst
+          chmod 755 stage/DEBIAN/postinst
+          dpkg-deb --build --root-owner-group stage "qingci-ime_${VERSION}_amd64.deb"
+          dpkg-deb -I "qingci-ime_${VERSION}_amd64.deb"
+          dpkg-deb -c "qingci-ime_${VERSION}_amd64.deb"
+
+          # ---------- 通用 tar.gz（解压到 / ）----------
+          tar -czf "qingci-ime-${PKG_REF}-linux-amd64.tar.gz" -C stage usr
+          tar -tzf "qingci-ime-${PKG_REF}-linux-amd64.tar.gz"
+
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: qingci-ime-package
-          path: "*.tar.gz"
+          path: |
+            *.tar.gz
+            *.deb
           if-no-files-found: error
 
-      - name: Attach package to GitHub Release
+      - name: Attach packages to GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ github.token }}
@@ -72,4 +111,4 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --title "清辞拼音 $GITHUB_REF_NAME" \
             --generate-notes \
-            *.tar.gz
+            *.tar.gz *.deb

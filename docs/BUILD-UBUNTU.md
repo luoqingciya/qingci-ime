@@ -20,7 +20,33 @@ source "$HOME/.cargo/env"
 > （Debian 上的 `fcitx5-dev` 在 Ubuntu 中不存在）；
 > `extra-cmake-modules` 提供 Fcitx5CompilerSettings 所需的 KDE/ECM 宏。
 
-## 二、构建与安装
+## 二、安装
+
+### 方式 A：安装 deb 包（推荐）
+
+从 [Releases](https://github.com/luoqingciya/qingci-ime/releases) 下载
+`qingci-ime_<版本>_amd64.deb`（CI 在 Ubuntu 26.04 上自动构建）：
+
+```bash
+sudo apt install ./qingci-ime_0.2.0_amd64.deb
+# 或：sudo dpkg -i qingci-ime_0.2.0_amd64.deb
+```
+
+包内含插件、词库与文档，依赖（fcitx5 ≥ 5.1.19）由 apt 自动解析；
+卸载：`sudo apt remove qingci-ime`（用户词频 `~/.local/share/qingci/` 会保留）。
+
+> deb 针对构建时的 fcitx5 版本（Ubuntu 26.04 = 5.1.19）；
+> 其他 Ubuntu 版本请使用方式 B/C。
+
+### 方式 B：通用 tar.gz
+
+从 Releases 下载 `qingci-ime_<版本>-linux-amd64.tar.gz`，解压到根目录：
+
+```bash
+sudo tar -xzf qingci-ime_0.2.0-linux-amd64.tar.gz -C /
+```
+
+### 方式 C：源码构建
 
 ```bash
 cd qingci-ime

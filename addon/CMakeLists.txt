@@ -6,6 +6,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(fcitx5-qingci VERSION 0.2.0 LANGUAGES CXX)
 
+include(GNUInstallDirs)
 find_package(ECM REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 find_package(Fcitx5Core REQUIRED)
