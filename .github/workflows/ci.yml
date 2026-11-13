@@ -138,13 +138,25 @@ jobs:
             *.deb
           if-no-files-found: error
 
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: qingci-ime-package-ubuntu*
+          merge-multiple: true
+
       - name: Attach packages to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: bash
         run: |
-          # 矩阵两个 job 依序发布：幂等创建/上传
+          ls -la
           gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 \
             || gh release create "$GITHUB_REF_NAME" \
                  --repo "$GITHUB_REPOSITORY" \
