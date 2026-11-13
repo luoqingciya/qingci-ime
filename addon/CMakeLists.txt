@@ -4,7 +4,7 @@
 #     -DQINGCI_CORE_STATIC_LIB=<path>/libqingci_core.a \
 #     -DQINGCI_CORE_DICT_PATH=<path>/qingci.dic
 cmake_minimum_required(VERSION 3.16)
-project(fcitx5-qingci VERSION 0.2.3 LANGUAGES CXX)
+project(fcitx5-qingci VERSION 0.2.4 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 find_package(ECM REQUIRED)
@@ -38,6 +38,7 @@ install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/qingci-setup"
 install(FILES data/qingci.conf
         DESTINATION "${FCITX_INSTALL_PKGDATADIR}/inputmethod")
 install(FILES data/qingci-addon.conf
+        RENAME qingci.conf
         DESTINATION "${FCITX_INSTALL_PKGDATADIR}/addon")
 install(FILES "${QINGCI_CORE_DICT_PATH}"
         DESTINATION "${FCITX_INSTALL_PKGDATADIR}/qingci")
