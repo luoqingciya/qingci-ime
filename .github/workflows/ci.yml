@@ -27,6 +27,7 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends \
             build-essential cmake extra-cmake-modules git curl \
+            ca-certificates \
             libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev \
             dpkg-dev pkg-config
           # 容器内安装 Rust（minimal profile）
