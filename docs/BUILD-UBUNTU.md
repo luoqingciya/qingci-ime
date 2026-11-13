@@ -28,8 +28,8 @@ source "$HOME/.cargo/env"
 对应版本的 deb（CI 在各发行版容器内构建并实测安装）：
 
 ```bash
-sudo apt install ./qingci-ime_0.2.5_ubuntu26.10_amd64.deb
-# 或：sudo dpkg -i qingci-ime_0.2.5_ubuntu26.10_amd64.deb
+sudo apt install ./qingci-ime_0.2.6_ubuntu26.10_amd64.deb
+# 或：sudo dpkg -i qingci-ime_0.2.6_ubuntu26.10_amd64.deb
 ```
 
 包内含插件、词库、文档与一键配置脚本，依赖（fcitx5 ≥ 5.1.19）由 apt
@@ -44,7 +44,7 @@ sudo apt install ./qingci-ime_0.2.5_ubuntu26.10_amd64.deb
 从 Releases 下载 `qingci-ime_<版本>-linux-amd64.tar.gz`，解压到根目录：
 
 ```bash
-sudo tar -xzf qingci-ime_0.2.5-linux-amd64.tar.gz -C /
+sudo tar -xzf qingci-ime_0.2.6-linux-amd64.tar.gz -C /
 ```
 
 ### 方式 C：源码构建
@@ -132,6 +132,7 @@ sudo qingci-setup
 | `Backspace` | 删除输入末字符（空缓冲时透传给应用） |
 | `Enter` | 上屏原始拼音 |
 | `Esc` | 清空输入 / 退出联想 |
+| `单击 Shift` | 切换中/英文模式（面板提示「中文/英文」） |
 | `CapsLock`+字母 | 大写字母透传（临时英文输入） |
 
 ### 中文标点
@@ -175,6 +176,18 @@ xi'an   → 1.西安 …
 - **无法切换输入法框架**：GNOME + Wayland 下需安装
   `fcitx5-frontend-gtk4/gtk3/qt5` 并使用 `im-config -n fcitx5`。
 - 通用诊断工具：`fcitx5-diagnose`。
+- **Firefox（snap 版）打不出中文**：Ubuntu 的 Firefox 是 snap 包，其内置 GTK
+  输入模块只有 fcitx4 的 `im-fcitx.so`，不含 fcitx5 所需 `im-fcitx5.so`，
+  且 snap 无法访问宿主模块（snap 沙箱限制，与清辞无关）。解决方案二选一：
+  1. 安装 deb 版 Firefox（Mozilla Team PPA），走宿主 GTK 模块：
+     ```bash
+     sudo add-apt-repository ppa:mozillateam/ppa
+     sudo apt install firefox
+     ```
+  2. 或改用 Google Chrome（官方 deb 包）。
+  安装后重新登录，浏览器即可正常输入中文。
+- **GNOME Wayland 下个别应用不接管输入**：确认该应用为 GTK3/GTK4/Qt 应用；
+  XWayland 应用依赖 `XMODIFIERS=@im=fcitx`（qingci-setup 已写入）。
 
 ## 七、已知限制
 

@@ -39,7 +39,7 @@
 - **联想预测**：上屏一词后自动推荐以末字开头的候选，连续选词连续联想
 - **候选高亮**：Tab / Shift+Tab 移动高亮，空格上屏高亮项
 - **预编辑分段**：输入串按音节显示（`ni'hao`）
-- **临时英文**：CapsLock 大写字母直接透传；回车上屏原始拼音
+- **临时英文**：单击 Shift 切换中/英模式；CapsLock 大写字母直接透传；回车上屏原始拼音
 
 ## 快速开始（Ubuntu 26.04.1）
 
@@ -49,7 +49,7 @@
 Ubuntu 版本的 deb 包（CI 自动构建并实测安装）：
 
 ```bash
-sudo apt install ./qingci-ime_0.2.5_ubuntu26.10_amd64.deb
+sudo apt install ./qingci-ime_0.2.6_ubuntu26.10_amd64.deb
 sudo qingci-setup        # 一键配置：切换 fcitx5 + 写入环境变量
 # 注销重新登录 → fcitx5-configtool 添加「清辞拼音」 → Ctrl+Space 切换
 ```
